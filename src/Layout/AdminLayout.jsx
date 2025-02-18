@@ -23,7 +23,7 @@ export default function AdminLayout({children}) {
       <div className="flex-1 flex flex-col">
         {/* Navbar */}
        <Navbar setIsCollapsed={setIsCollapsed} isCollapsed={isCollapsed}/>
-        <div className="p-4">{children}</div>
+        <div className="p-4 overflow-y-scroll no-scrollbar bg-[#EFF0F1]">{children}</div>
       </div>
     </div>
   );
