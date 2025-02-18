@@ -1,15 +1,16 @@
-import { Route, Routes } from "react-router-dom";
-import Homepage from "./Pages/Homepage";
-import AdminLayout from "./Layout/AdminLayout";
+
+import React from "react";
+import DepartmentList from "./Components/department";  // Correct the path here
+
+
 
 function App() {
   return (
-      <AdminLayout>
-        <Routes>
-          <Route path="/" element={<Homepage/>}/>
-        </Routes>
-      </AdminLayout>
+    <div className="App">
+      <DepartmentList /> {/* Render the DepartmentList component */}
+    </div>
   );
 }
 
 export default App;
+
