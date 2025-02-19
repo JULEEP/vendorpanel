@@ -29,7 +29,7 @@ const Sidebar = ({isCollapsed,isMobile,setIsCollapsed}) => {
             } overflow-y-scroll no-scrollbar h-full flex flex-col  `}
           >
             <div className="sticky top-0 text-[#464255] p-4 font-bold bg-[#F9F9F9] flex items-end justify-center">{!isCollapsed || isMobile ? <img className='h-[7vh] w-[70%]' src="https://hrm.bdtask-demoserver.com/storage/application/1716900096sidebar-logo.png" alt="" /> :<img className='h-[5vh] w-[70%]' src='https://hrm.bdtask-demoserver.com/storage/application/1716900212sidebar-collapsed-logo.png'/> }</div>
-            <nav className={`flex flex-col ${isCollapsed && "items-center"} items-start space-y-4 mt-4 shadow-lg`}>
+            <nav className={`flex flex-col ${isCollapsed && "items-center"}  space-y-4 mt-4 shadow-lg`}>
 
                <button onClick={() => setIsCollapsed(!isCollapsed)} className={`text-xl p-2 ${isMobile ? "block absolute top-[2vh] right-0":"hidden"}`} >
                 {isCollapsed? <i class="ri-menu-2-line text-2xl text-[#AAAAAA]"></i>:<i class="ri-menu-3-line text-2xl text-[#AAAAAA]"></i>}
