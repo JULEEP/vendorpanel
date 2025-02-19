@@ -1,14 +1,22 @@
 
 import React from "react";
-import DepartmentList from "./Components/department";  // Correct the path here
-
+import { Route, Routes } from "react-router-dom";
+import Attendance from './attendanceform';
+import DepartmentList from "./Components/department"; // Correct the path here
+import AdminLayout from "./Layout/AdminLayout";
+import MonthlyAttendance from "./MonthlyAttendance";
 
 
 function App() {
   return (
-    <div className="App">
-      <DepartmentList /> {/* Render the DepartmentList component */}
-    </div>
+    <AdminLayout>
+      <Routes>
+        <Route path="/department" element={<DepartmentList/>}/>
+        <Route path="/attendanceform" element={<Attendance/>}/>
+        <Route path="/monthlyattendance" element={<MonthlyAttendance/>}/>
+
+      </Routes>
+    </AdminLayout>
   );
 }
 
