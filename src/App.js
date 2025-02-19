@@ -7,6 +7,7 @@ import { Routes,Route } from "react-router-dom";
 import Homepage from "./Pages/Homepage";
 // import { Route } from "lucide-react";
 import AdminLayout from "./Layout/AdminLayout.jsx";
+import SubDepartmentList from "./Components/subdepartment.js";
 
 
 
@@ -17,6 +18,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage/>}/>
         <Route path="/department" element={<DepartmentList/>}/>
+        <Route path="/subdepartment" element={<SubDepartmentList/>}/>
       </Routes>
     </AdminLayout>
   );
