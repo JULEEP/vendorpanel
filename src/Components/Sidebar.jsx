@@ -2,7 +2,7 @@ import { X } from 'lucide-react'
 import React from 'react'
 import { FaCog, FaHome, FaUser } from 'react-icons/fa'
 
-const Sidebar = ({isCollapsed,isMobile}) => {
+const Sidebar = ({isCollapsed,isMobile,setIsCollapsed}) => {
   const elements=[
     { icon: <i class="ri-home-fill"></i>, name: "Dashboard" }, 
     { icon: <i class="ri-user-fill"></i> , name: "Attendance" }, 
@@ -25,11 +25,16 @@ const Sidebar = ({isCollapsed,isMobile}) => {
   return (
     <div
             className={`bg-[#FFFFFF] text-white transition-all duration-300 ${
-              isMobile ? (isCollapsed ? "w-0" : "w-64") : isCollapsed ? "w-16" : "w-64"
-            } overflow-y-scroll no-scrollbar h-full flex flex-col`}
+              isMobile ? (isCollapsed ? "w-0" : "w-64 absolute top-0 left-0 z-10") : (isCollapsed ? "w-16" : "w-64")
+            } overflow-y-scroll no-scrollbar h-full flex flex-col  `}
           >
             <div className="sticky top-0 text-[#464255] p-4 font-bold bg-[#F9F9F9] flex items-end justify-center">{!isCollapsed || isMobile ? <img className='h-[7vh] w-[70%]' src="https://hrm.bdtask-demoserver.com/storage/application/1716900096sidebar-logo.png" alt="" /> :<img className='h-[5vh] w-[70%]' src='https://hrm.bdtask-demoserver.com/storage/application/1716900212sidebar-collapsed-logo.png'/> }</div>
-            <nav className={`flex flex-col ${isCollapsed && "items-center"} space-y-4 mt-4 shadow-lg`}>
+            <nav className={`flex flex-col ${isCollapsed && "items-center"} items-start space-y-4 mt-4 shadow-lg`}>
+
+               <button onClick={() => setIsCollapsed(!isCollapsed)} className={`text-xl p-2 ${isMobile ? "block absolute top-[2vh] right-0":"hidden"}`} >
+                {isCollapsed? <i class="ri-menu-2-line text-2xl text-[#AAAAAA]"></i>:<i class="ri-menu-3-line text-2xl text-[#AAAAAA]"></i>}
+              </button>
+
               {elements.map((item, idx) => (
                 <div key={idx} className="flex items-center py-2 px-3 font-semibold text-sm text-[#464255] mx-4 rounded-lg hover:bg-[#D9F3EA] hover:text-[#00B074] duration-300 cursor-pointer">
                   <span className="text-xl">{item.icon}</span>
