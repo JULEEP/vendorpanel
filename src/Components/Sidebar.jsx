@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FaChevronDown } from 'react-icons/fa';
+import React, { useState } from "react";
+import { FaChevronDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const Sidebar = ({ isCollapsed, isMobile }) => {
@@ -11,9 +11,9 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
       icon: <i className="ri-user-fill"></i>,
       name: "Attendance",
       dropdown: [
-        { name: "Attendance Form", path: "/attendanceform" },
-        { name: "Monthly Attendance", path: "/monthlyattendance" },
-        { name: "Missing Attendance", path: "/missingattendance" },
+        { name: "AttendanceForm", path: "/attendanceform" },
+        { name: "MonthlyAttendance", path: "/monthlyattendance" },
+        { name: "MissingAttendance", path: "/missingattendance" },
       ],
     },
     { icon: <i className="ri-trophy-fill"></i>, name: "Award" },
@@ -34,7 +34,11 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
   ];
 
   return (
-    <div className={`bg-[#FFFFFF] text-white transition-all duration-300 ${isMobile ? (isCollapsed ? "w-0" : "w-64") : isCollapsed ? "w-16" : "w-64"} overflow-y-scroll no-scrollbar h-full flex flex-col`}>
+    <div
+      className={`bg-[#FFFFFF] text-white transition-all duration-300 ${
+        isMobile ? (isCollapsed ? "w-0" : "w-64") : isCollapsed ? "w-16" : "w-64"
+      } overflow-y-scroll no-scrollbar h-full flex flex-col`}
+    >
       <div className="sticky top-0 text-[#464255] p-4 font-bold bg-[#F9F9F9] flex items-end justify-center">
         {!isCollapsed || isMobile ? (
           <img
@@ -59,16 +63,20 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
                   onClick={() => setAttendanceOpen(!attendanceOpen)}
                 >
                   <span className="text-xl">{item.icon}</span>
-                  <span className={`ml-4 ${isCollapsed && !isMobile ? "hidden" : "block"} font-bold cursor-pointer`}>{item.name}</span>
+                  <span className={`ml-4 ${isCollapsed && !isMobile ? "hidden" : "block"} font-bold cursor-pointer`}>
+                    {item.name}
+                  </span>
                   <FaChevronDown className="ml-auto text-xs" />
                 </div>
                 {attendanceOpen && (
                   <ul className="ml-10 text-sm text-[#464255]">
                     {item.dropdown.map((subItem, subIdx) => (
                       <li key={subIdx}>
+                        {/*Fix: Link pe click hone par dropdown close hoga aur page navigate karega */}
                         <Link
                           to={subItem.path}
                           className="flex items-center space-x-2 py-2 font-bold cursor-pointer hover:text-[#00B074] hover:underline"
+                          onClick={() => setAttendanceOpen(false)} //Dropdown close hoga
                         >
                           <span className="text-[#00B074]">•</span>
                           <span>{subItem.name}</span>
@@ -84,7 +92,9 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
                 className="flex items-center py-3 px-4 font-bold text-sm text-[#464255] mx-4 rounded-lg hover:bg-[#D9F3EA] hover:text-[#00B074] duration-300 cursor-pointer"
               >
                 <span className="text-xl">{item.icon}</span>
-                <span className={`ml-4 ${isCollapsed && !isMobile ? "hidden" : "block"} font-bold cursor-pointer`}>{item.name}</span>
+                <span className={`ml-4 ${isCollapsed && !isMobile ? "hidden" : "block"} font-bold cursor-pointer`}>
+                  {item.name}
+                </span>
               </Link>
             )}
           </div>

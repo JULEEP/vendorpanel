@@ -17,7 +17,7 @@ export default function AdminLayout({children}) {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <Sidebar isCollapsed={isCollapsed} isMobile={isMobile}/>
+      <Sidebar isCollapsed={isCollapsed} isMobile={isMobile} setIsCollapsed={setIsCollapsed}/>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
