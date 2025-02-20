@@ -1,4 +1,3 @@
-
 import React from "react";
 import DepartmentList from "./Components/department";
 
@@ -15,7 +14,6 @@ import AdminLayout from "./Layout/AdminLayout.jsx";
 // import AttendanceForm from "./Pages/AttendanceForm"; // ✅ Fix import path
 // import MissingAttendance from "./Pages/MissingAttendance"; // ✅ Fix import path
 // import MonthlyAttendance from "./Pages/MonthlyAttendance"; // ✅ Fix import path
-
 
 
 
