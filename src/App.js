@@ -19,6 +19,7 @@ import WeeklyHoliday from "./Pages/WeeklyHoliday.js";
 import AdminLayout from "./Layout/AdminLayout.jsx";
 import Performance from "./Employee/Performance.js";
 import Recruitment from "./Components/recruitment.js";
+import Performance from "./Employee/Performance.js";
 // import AttendanceForm from "./Pages/AttendanceForm"; // ✅ Fix import path
 // import MissingAttendance from "./Pages/MissingAttendance"; // ✅ Fix import path
 // import MonthlyAttendance from "./Pages/MonthlyAttendance"; // ✅ Fix import path
@@ -43,6 +44,7 @@ function App() {
         <Route path="/leaveapproval" element={<LeaveApproval />} />
         <Route path="/performance" element={<Performance/>}/>
         <Route path="/recruitment" element={<Recruitment />} />
+        <Route path="/performance" element={<Performance />} />
 
       </Routes>
     </AdminLayout>
