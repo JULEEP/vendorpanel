@@ -72,13 +72,58 @@ const Dashboard = () => {
       {/* Leave Applications */}
       <div className="p-4 bg-white shadow rounded-lg">
         <h3 className="text-lg font-semibold mb-2">Leave Applications</h3>
-        <div className="space-y-2">
-          {['Maisha Lucy', 'Honorato Terry', 'Amy Peck'].map((name, index) => (
+        <hr />
+        <div className="space-y-6">
+          {/* {['Maisha Lucy', 'Honorato Terry', 'Amy Peck'].map((name, index) => (
             <div key={index} className="flex justify-between">
               <p>{name}</p>
               <span className="text-green-500">Approved</span>
             </div>
-          ))}
+          ))} */}
+          <div className="flex items-center justify-between mt-4 border-b-[#E5E7EB] border-b-[1px]">
+            <div className="flex items-center gap-2">
+              <img src="https://hrm.bdtask-demoserver.com/assets/user-1.png" alt="" />
+              <div className="flex flex-col">
+                <h1 className="text-sm font-bold leading-none">Maisha Lucy Zamora Gonzales</h1>
+                <p>Reason : <span>tt</span></p>
+
+              </div> 
+            </div>
+            <button className="px-2 py-1 font-semibold bg-[#D9F3EA] text-[#00B074] rounded-md">Approved</button>
+          </div>
+          <div className="flex items-center justify-between mt-4 border-b-[#E5E7EB] border-b-[1px]">
+            <div className="flex items-center gap-2">
+              <img src="https://hrm.bdtask-demoserver.com/assets/user-1.png" alt="" />
+              <div className="flex flex-col">
+                <h1 className="text-sm font-bold leading-none">Maisha Lucy Zamora Gonzales</h1>
+                <p>Reason : <span>tt</span></p>
+
+              </div> 
+            </div>
+            <button className="px-2 py-1 font-semibold bg-[#D9F3EA] text-[#00B074] rounded-md">Approved</button>
+          </div>
+          <div className="flex items-center justify-between mt-4 border-b-[#E5E7EB] border-b-[1px]">
+            <div className="flex items-center gap-2">
+              <img src="https://hrm.bdtask-demoserver.com/assets/user-1.png" alt="" />
+              <div className="flex flex-col">
+                <h1 className="text-sm font-bold leading-none">Maisha Lucy Zamora Gonzales</h1>
+                <p>Reason : <span>tt</span></p>
+
+              </div> 
+            </div>
+            <button className="px-2 py-1 font-semibold bg-[#D9F3EA] text-[#00B074] rounded-md">Approved</button>
+          </div>
+          <div className="flex items-center justify-between mt-4 border-b-[#E5E7EB] border-b-[1px]">
+            <div className="flex items-center gap-2">
+              <img src="https://hrm.bdtask-demoserver.com/assets/user-1.png" alt="" />
+              <div className="flex flex-col">
+                <h1 className="text-sm font-bold leading-none">Maisha Lucy Zamora Gonzales</h1>
+                <p>Reason : <span>tt</span></p>
+
+              </div> 
+            </div>
+            <button className="px-2 py-1 font-semibold bg-[#D9F3EA] text-[#00B074] rounded-md">Approved</button>
+          </div>
         </div>
       </div>
       
