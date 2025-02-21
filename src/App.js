@@ -6,7 +6,7 @@ import { Route, Routes } from "react-router-dom";
 // import { Route } from "lucide-react";
 import SubDepartmentList from "./Components/subdepartment.js";
 import Position from "./Employee/Position.js";
-import AdminLayout from "./Layout/AdminLayout.jsx";
+// import AdminLayout from "./Layout/AdminLayout.jsx";
 import AttendanceForm from "./Pages/AttendanceForm.js";
 import Dashboard from "./Pages/Dashboard.jsx";
 import Holiday from "./Pages/Holiday.js";
