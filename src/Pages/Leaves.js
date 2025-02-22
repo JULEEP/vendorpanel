@@ -117,8 +117,8 @@ const LeaveTypeModal = ({ data, onClose, onSave }) => {
           onChange={(e) => setDays(e.target.value)}
         />
         <div className="flex justify-end mt-4">
-          <button className="px-4 py-2 mr-2 text-red-700 bg-green-100 border border-red-600 rounded" onClick={onClose}>Close</button>
-          <button className="px-4 py-2 text-blue-700 bg-green-100 border border-blue-600 rounded" onClick={handleSubmit}>
+          <button className="px-4 py-2 mr-2 text-red-700 bg-red-100 border border-red-600 rounded" onClick={onClose}>Close</button>
+          <button className="px-4 py-2 text-blue-700 bg-blue-100 border border-blue-600 rounded" onClick={handleSubmit}>
             {data ? "Update" : "Save"}
           </button>
         </div>

@@ -106,7 +106,7 @@ const AttendanceForm = () => {
             <div className="flex justify-end space-x-2">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 text-red-700 bg-green-100 border border-red-600 rounded"
+                className="px-4 py-2 text-red-700 bg-red-100 border border-red-600 rounded"
               >
                 Close
               </button>

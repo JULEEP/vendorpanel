@@ -7,11 +7,7 @@ const MissingAttendance = () => {
   useEffect(() => {
     const fetchMissingAttendance = async () => {
       try {
-        // Replace this with your actual API call
-        // const response = await fetch("http://your-api.com/missing-attendance");
-        // const data = await response.json();
-
-        // Dummy data for testing
+        
         const data = [
           { id: 1, name: "John Doe", date: "2025-02-19", reason: "Forgot to check-in" },
           { id: 2, name: "Jane Smith", date: "2025-02-18", reason: "System error" },
