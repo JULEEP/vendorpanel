@@ -35,6 +35,19 @@ const Dashboard = () => {
       const COLORS = {
         ABC: "#FFCC00",
       };
+
+      const notices = [
+        { title: "bgvjhgc", subtitle: "bhubh", date: "31-Jan-25" },
+        { title: "dededed", subtitle: "Policy", date: "16-Jan-25" },
+        { title: "fasdf", subtitle: "dfgds", date: "23-Jan-25" },
+      ];
+      const awards = [
+        { id: 1, name: "Amy Aphrodite Zamora Peck", department: "Production", award: "First Team", date: "18-02-2025", img: "https://hrm.bdtask-demoserver.com/assets/user-1.png" },
+        { id: 2, name: "Maisha Lucy Zamora Gonzales", department: "", award: "Team Son", date: "17-02-2025", img: "https://hrm.bdtask-demoserver.com/assets/user-1.png" },
+        { id: 3, name: "Maisha Lucy Zamora Gonzales", department: "", award: "Team Son", date: "17-02-2025", img: "https://hrm.bdtask-demoserver.com/assets/user-1.png" },
+        { id: 4, name: "Amy Aphrodite Zamora Peck", department: "Production", award: "Stupid", date: "12-02-2025", img: "https://hrm.bdtask-demoserver.com/assets/user-1.png" },
+        { id: 5, name: "Amy Aphrodite Zamora Peck", department: "Production", award: "fool", date: "12-02-2025", img: "https://hrm.bdtask-demoserver.com/assets/user-1.png" }
+      ];
     
     // md:flex md:flex-col md:w-[100%] md:justify-between md:items-center space-y-4 w-[78vw]
       return (
@@ -270,7 +283,73 @@ const Dashboard = () => {
         </div>
       
       </div>
-
+        {/* Notice */}
+        <div className="md:col-span-1 bg-white shadow-lg rounded-xl p-4">
+      <div className="flex items-center gap-2 text-lg font-semibold">
+        <span className="text-green-500">
+        <i class="ri-calendar-line"></i>
+        </span>
+        <span>Notice</span>
+      </div>
+      <div className="mt-4 space-y-4">
+        {notices.map((notice, index) => (
+          <div key={index} className="bg-gray-100 p-4 rounded-lg flex justify-between items-start">
+            <div>
+              <p className="font-bold">{notice.title}</p>
+              <span className="bg-[#FFFFFF] text-xs px-3 py-2 rounded-lg inline-block mt-1">
+                {notice.subtitle}
+              </span>
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              <i class="ri-star-line text-2xl"></i>
+              <span className="text-green-500 flex items-center gap-1">
+              <i class="ri-calendar-line text-xl"></i>
+                {notice.date}
+              </span>
+              <button>
+                <i className="far fa-star text-gray-500"></i>
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button className="w-full text-center text-sm text-gray-600 mt-4 hover:underline">
+        See More
+      </button>
+    </div>
+        {/* Employee Award List */}
+        <div className="md:col-span-3 bg-white shadow-md rounded-lg p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold">Employee award list</h2>
+        <button className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2">
+          <span>&#9776;</span> Award list
+        </button>
+      </div>
+      <table className="w-full border-collapse">
+        <thead>
+          <tr className="bg-gray-100 text-left">
+            <th className="p-2 font-bold">Sl.</th>
+            <th className="p-2 font-bold">Image</th>
+            <th className="p-2 font-bold">Name</th>
+            <th className="p-2 font-bold">Department name</th>
+            <th className="p-2 font-bold">Award name</th>
+            <th className="p-2 font-bold">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {awards.map((award) => (
+            <tr key={award.id} className="border-t">
+              <td className="p-2">{award.id}</td>
+              <td className="p-2"><img src={award.img} alt="Employee" className="w-10 h-10 rounded-lg" /></td>
+              <td className="p-2">{award.name}</td>
+              <td className="p-2">{award.department}</td>
+              <td className="p-2 flex items-center gap-1">🏆 {award.award}</td>
+              <td className="p-2">{award.date}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
       
     </div>
       );
