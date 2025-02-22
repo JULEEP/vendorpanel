@@ -17,7 +17,7 @@ import MissingAttendance from "./Pages/MissingAttendance.js";
 import MonthlyAttendance from "./Pages/MonthlyAttendance.js";
 import WeeklyHoliday from "./Pages/WeeklyHoliday.js";
 import AdminLayout from "./Layout/AdminLayout.jsx";
-import Performance from "./Employee/Performance.js";
+// import Performance from "./Employee/Performance.js";
 import Recruitment from "./Components/recruitment.js";
 import Performance from "./Employee/Performance.js";
 // import AttendanceForm from "./Pages/AttendanceForm"; // ✅ Fix import path
