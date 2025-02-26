@@ -43,8 +43,14 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
     { icon: <i className="ri-folder-chart-fill"></i>, name: "Reports" },
     { icon: <i className="ri-star-fill"></i>, name: "Reward Points" },
     { icon: <i className="ri-chat-2-fill"></i>, name: "Setup rules" },
-    { icon: <i className="ri-settings-2-fill"></i>, name: "Settings" },
-    { icon: <i className="ri-chat-2-fill"></i>, name: "Message" },
+    { icon: <i className="ri-settings-2-fill"></i>, name: "Settings", 
+      dropdown: [
+        { name: "Setting", path: "/setting" },
+        { name: "Language Setup", path: "/languagesetup" },
+        { name: "Backup Reset", path: "/backupreset" },
+      ]
+    },
+    { icon: <i className="ri-chat-2-fill"></i>, name: "Message",},
   ];
 
   return (

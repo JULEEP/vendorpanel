@@ -7,6 +7,7 @@ import { Route, Routes } from "react-router-dom";
 import SubDepartmentList from "./Components/subdepartment.js";
 import Position from "./Employee/Position.js";
 // import AdminLayout from "./Layout/AdminLayout.jsx";
+import AdminLayout from "./Layout/AdminLayout.jsx";
 import AttendanceForm from "./Pages/AttendanceForm.js";
 import Dashboard from "./Pages/Dashboard.jsx";
 import Holiday from "./Pages/Holiday.js";
@@ -16,13 +17,13 @@ import Leaves from "./Pages/Leaves.js";
 import MissingAttendance from "./Pages/MissingAttendance.js";
 import MonthlyAttendance from "./Pages/MonthlyAttendance.js";
 import WeeklyHoliday from "./Pages/WeeklyHoliday.js";
-import AdminLayout from "./Layout/AdminLayout.jsx";
 // import Performance from "./Employee/Performance.js";
 import Recruitment from "./Components/recruitment.js";
 import Performance from "./Employee/Performance.js";
-// import AttendanceForm from "./Pages/AttendanceForm"; // ✅ Fix import path
-// import MissingAttendance from "./Pages/MissingAttendance"; // ✅ Fix import path
-// import MonthlyAttendance from "./Pages/MonthlyAttendance"; // ✅ Fix import path
+import BackupReset from "./Pages/BackupReset.js";
+import LanguageSetup from "./Pages/LanguageSetup.js";
+import Setting from "./Pages/Setting";
+
 
 
 
@@ -45,6 +46,9 @@ function App() {
         <Route path="/performance" element={<Performance/>}/>
         <Route path="/recruitment" element={<Recruitment />} />
         <Route path="/performance" element={<Performance />} />
+        <Route path="/setting" element={<Setting />} />
+        <Route path="/languagesetup" element={<LanguageSetup />} />
+        <Route path="/backupreset" element={<BackupReset />} />
 
       </Routes>
     </AdminLayout>
