@@ -22,7 +22,14 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
     },
     { icon: <i className="ri-trophy-fill"></i>, name: "Award" },
     { icon: <i className="ri-government-fill"></i>, name: "Department" },
-    { icon: <i className="ri-team-fill"></i>, name: "Employee" },
+    { icon: <i className="ri-team-fill"></i>, 
+      name: "Employee",
+      dropdown: [
+        { name: "Position", path: "/position" },
+        { name: "Employee", path: "/employees" },
+        { name: "Employee Performance", path: "/performance" },
+      ],
+    },
     {
       icon: <i className="ri-plane-fill"></i>,
       name: "Leave",

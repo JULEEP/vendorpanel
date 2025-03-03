@@ -1,6 +1,6 @@
+import { saveAs } from "file-saver";
 import React, { useState } from "react";
 import { FaFileCsv, FaFileExcel, FaPlus } from "react-icons/fa";
-import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 
 const Performance = () => {
@@ -115,21 +115,19 @@ const Performance = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   return (
-    <div className="container mx-auto p-6">
-      <h2 className="text-xl font-semibold mb-2 text-center">
-        Employee Performance List
-      </h2>
-      <div className="flex justify-center my-4">
-        <div className="flex space-x-4">
+    <div className="w-full min-h-screen p-6 mx-auto bg-white">
+    <h2 className="mb-2 text-xl font-semibold text-left">Employee Performance List</h2>
+    <div className="flex my-4 justify-left">
+      <div className="flex space-x-4">
           <button
             onClick={downloadCSV}
-            className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center"
+            className="flex items-center px-4 py-2 text-green-700 bg-green-100 border border-green-600 rounded"
           >
             <FaFileCsv className="mr-2" /> CSV
           </button>
           <button
             onClick={downloadExcel}
-            className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center"
+            className="flex items-center px-4 py-2 text-green-700 bg-green-100 border border-green-600 rounded"
           >
             <FaFileExcel className="mr-2" /> Excel
           </button>
@@ -140,36 +138,36 @@ const Performance = () => {
         <input
           type="text"
           placeholder="Search..."
-          className="border border-gray-300 px-3 py-2 rounded-lg"
+          className="px-3 py-2 border border-gray-300 rounded-lg"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <button
           onClick={() => setModalOpen(true)}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center"
+          className="flex items-center px-4 py-2 text-green-700 bg-green-100 border border-green-600 rounded"
         >
           <FaPlus className="mr-2" /> Add Employee Performance
         </button>
       </div>
 
-      <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
+      <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
         <thead>
           <tr className="bg-gray-100 border-b">
-            <th className="py-3 px-4 text-left">SI</th>
-            <th className="py-3 px-4 text-left">Employee Name</th>
-            <th className="py-3 px-4 text-left">Total Score</th>
-            <th className="py-3 px-4 text-left">Create Date</th>
+            <th className="px-4 py-3 text-left">SI</th>
+            <th className="px-4 py-3 text-left">Employee Name</th>
+            <th className="px-4 py-3 text-left">Total Score</th>
+            <th className="px-4 py-3 text-left">Create Date</th>
           </tr>
         </thead>
         <tbody>
           {paginatedData.map((employee, index) => (
             <tr key={employee.id} className="border-b hover:bg-gray-50">
-              <td className="py-3 px-4">
+              <td className="px-4 py-3">
                 {(currentPage - 1) * itemsPerPage + index + 1}
               </td>
-              <td className="py-3 px-4">{employee.name}</td>
-              <td className="py-3 px-4">{employee.score}</td>
-              <td className="py-3 px-4">{employee.date}</td>
+              <td className="px-4 py-3">{employee.name}</td>
+              <td className="px-4 py-3">{employee.score}</td>
+              <td className="px-4 py-3">{employee.date}</td>
             </tr>
           ))}
         </tbody>
@@ -179,7 +177,7 @@ const Performance = () => {
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
-          className="bg-green-500 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+          className="px-4 py-2 text-green-700 bg-green-100 border border-green-600 rounded"
         >
           Previous
         </button>
@@ -189,7 +187,7 @@ const Performance = () => {
         <button
           onClick={handleNextPage}
           disabled={currentPage === totalPages}
-          className="bg-green-500 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+          className="px-4 py-2 text-green-700 bg-green-100 border border-green-600 rounded"
         >
           Next
         </button>
@@ -199,7 +197,7 @@ const Performance = () => {
       (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
     <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-4xl">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Employee Performance Review</h2>
         <button
           onClick={() => setModalOpen(false)}
@@ -213,7 +211,7 @@ const Performance = () => {
             <label className="block text-gray-700">Name of Employee:</label>
             <input
               type="text"
-              className="w-full border rounded p-2"
+              className="w-full p-2 border rounded"
               placeholder="Employee Name"
               value={formData.employee}
               onChange={(e) => setFormData({ ...formData, employee: e.target.value })}
@@ -223,7 +221,7 @@ const Performance = () => {
             <label className="block text-gray-700">Review Period:</label>
             <input
               type="text"
-              className="w-full border rounded p-2"
+              className="w-full p-2 border rounded"
               placeholder="Review Period in Months"
               value={formData.reviewPeriod}
               onChange={(e) => setFormData({ ...formData, reviewPeriod: e.target.value })}
@@ -234,23 +232,23 @@ const Performance = () => {
           <label className="block text-gray-700">Name and Position of Supervisor:</label>
           <input
             type="text"
-            className="w-full border rounded p-2"
+            className="w-full p-2 border rounded"
             placeholder="Name and Position of Supervisor"
             value={formData.supervisor}
             onChange={(e) => setFormData({ ...formData, supervisor: e.target.value })}
           />
         </div>
-        <table className="w-full border-collapse border my-4">
+        <table className="w-full my-4 border border-collapse">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border p-2">Criteria</th>
-              <th className="border p-2">P (0)</th>
-              <th className="border p-2">NI (3)</th>
-              <th className="border p-2">G (6)</th>
-              <th className="border p-2">VG (9)</th>
-              <th className="border p-2">E (12)</th>
-              <th className="border p-2">Score</th>
-              <th className="border p-2">Comments</th>
+              <th className="p-2 border">Criteria</th>
+              <th className="p-2 border">P (0)</th>
+              <th className="p-2 border">NI (3)</th>
+              <th className="p-2 border">G (6)</th>
+              <th className="p-2 border">VG (9)</th>
+              <th className="p-2 border">E (12)</th>
+              <th className="p-2 border">Score</th>
+              <th className="p-2 border">Comments</th>
             </tr>
           </thead>
           <tbody>
@@ -260,9 +258,9 @@ const Performance = () => {
               { key: "achievement", label: "Impact of Achievement" },
             ].map(({ key, label }) => (
               <tr key={key}>
-                <td className="border p-2">{label}</td>
+                <td className="p-2 border">{label}</td>
                 {[0, 3, 6, 9, 12].map((score, index) => (
-                  <td className="border p-2 text-center" key={index}>
+                  <td className="p-2 text-center border" key={index}>
                     <input
                       type="radio"
                       name={key}
@@ -272,11 +270,11 @@ const Performance = () => {
                     />
                   </td>
                 ))}
-                <td className="border p-2 text-center">{formData.scores[key]}</td>
-                <td className="border p-2">
+                <td className="p-2 text-center border">{formData.scores[key]}</td>
+                <td className="p-2 border">
                   <input
                     type="text"
-                    className="w-full border rounded p-1"
+                    className="w-full p-1 border rounded"
                     placeholder="Enter comment"
                     value={formData.comments[key]}
                     onChange={(e) =>
@@ -292,7 +290,7 @@ const Performance = () => {
           </tbody>
         </table>
         <div className="flex justify-center mt-4">
-          <button className="bg-green-500 text-white px-6 py-2 rounded-lg">Submit</button>
+          <button className="px-6 py-2 text-green-700 bg-green-100 border border-green-600 rounded">Submit</button>
         </div>
       </div>
      </div>
@@ -301,4 +299,4 @@ const Performance = () => {
   );
 };
 
-export default Performance;
+export default Performance;     

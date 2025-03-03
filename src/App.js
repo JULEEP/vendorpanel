@@ -19,6 +19,7 @@ import MonthlyAttendance from "./Pages/MonthlyAttendance.js";
 import WeeklyHoliday from "./Pages/WeeklyHoliday.js";
 // import Performance from "./Employee/Performance.js";
 import Recruitment from "./Components/recruitment.js";
+import Employees from "./Employee/Employees.js";
 import Performance from "./Employee/Performance.js";
 import BackupReset from "./Pages/BackupReset.js";
 import LanguageSetup from "./Pages/LanguageSetup.js";
@@ -44,8 +45,10 @@ function App() {
         <Route path="/leaves" element={<Leaves />} />
         <Route path="/leaveapproval" element={<LeaveApproval />} />
         <Route path="/performance" element={<Performance/>}/>
+        <Route path="/position" element={<Position/>}/>
         <Route path="/recruitment" element={<Recruitment />} />
         <Route path="/performance" element={<Performance />} />
+        <Route path="/employees" element={<Employees />} />
         <Route path="/setting" element={<Setting />} />
         <Route path="/languagesetup" element={<LanguageSetup />} />
         <Route path="/backupreset" element={<BackupReset />} />
