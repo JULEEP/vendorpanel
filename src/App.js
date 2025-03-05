@@ -24,6 +24,11 @@ import Performance from "./Employee/Performance.js";
 import BackupReset from "./Pages/BackupReset.js";
 import LanguageSetup from "./Pages/LanguageSetup.js";
 import Setting from "./Pages/Setting";
+import AwardList from "./Pages/Awardlist.js";
+import MessagesTable from "./Pages/Message.js";
+import NoticeList from "./Pages/Noticelist.js";
+import SentMessagesTable from "./Pages/Sent.js";
+import SetupRulesTable from "./Pages/Setup.js";
 
 
 
@@ -52,6 +57,17 @@ function App() {
         <Route path="/setting" element={<Setting />} />
         <Route path="/languagesetup" element={<LanguageSetup />} />
         <Route path="/backupreset" element={<BackupReset />} />
+        <Route path="/awardlist" element={<AwardList/>} />
+        <Route path="/message" element={<MessagesTable/>} />
+        <Route path="/noticelist" element={<NoticeList/>} />
+        <Route path="/sentlist" element={<SentMessagesTable/>} />
+        <Route path="/setuplist" element={<SetupRulesTable/>} />
+
+
+
+        
+
+
 
       </Routes>
     </AdminLayout>
