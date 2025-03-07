@@ -20,14 +20,17 @@ import WeeklyHoliday from "./Pages/WeeklyHoliday.js";
 // import Performance from "./Employee/Performance.js";
 import Recruitment from "./Components/recruitment.js";
 import Employees from "./Employee/Employees.js";
+import Manageemployeesalary from "./Employee/Manageemployeesalary.js";
 import Performance from "./Employee/Performance.js";
+import SalaryAdvance from "./Employee/SalaryAdvance.js";
+import SalaryGenerate from "./Employee/SalaryGenerate.js";
+import AwardList from "./Pages/Awardlist.js";
 import BackupReset from "./Pages/BackupReset.js";
 import LanguageSetup from "./Pages/LanguageSetup.js";
-import Setting from "./Pages/Setting";
-import AwardList from "./Pages/Awardlist.js";
 import MessagesTable from "./Pages/Message.js";
 import NoticeList from "./Pages/Noticelist.js";
 import SentMessagesTable from "./Pages/Sent.js";
+import Setting from "./Pages/Setting";
 import SetupRulesTable from "./Pages/Setup.js";
 
 
@@ -62,11 +65,9 @@ function App() {
         <Route path="/noticelist" element={<NoticeList/>} />
         <Route path="/sentlist" element={<SentMessagesTable/>} />
         <Route path="/setuplist" element={<SetupRulesTable/>} />
-
-
-
-        
-
+        <Route path="/salaryadvance" element={<SalaryAdvance />} />
+        <Route path="/salarygenerate" element={<SalaryGenerate />} />
+        <Route path="/manageemployeesalary" element={<Manageemployeesalary />} />
 
 
       </Routes>
