@@ -1,27 +1,30 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Pencil, Trash } from "lucide-react";
 import { CSVLink } from "react-csv";
 import * as XLSX from "xlsx";
 
-const initialDepartments = [
-  { id: 1, name: "International Agents", status: "Inactive" },
-  { id: 2, name: "Finance", status: "Active" },
-  { id: 3, name: "ABC", status: "Active" },
-  { id: 4, name: "Safety, Security", status: "Active" },
-  { id: 5, name: "Dealing", status: "Active" },
-  { id: 6, name: "Software Support Engineer", status: "Active" },
-  { id: 7, name: "Technical", status: "Active" },
-  { id: 8, name: "Finance", status: "Active" },
-  { id: 9, name: "Admin", status: "Active" },
-  { id: 10, name: "Internal audit control", status: "Active" },
-];
-
 const DepartmentList = () => {
-  const [departments, setDepartments] = useState(initialDepartments);
+  const [departments, setDepartments] = useState([]);
   const [editId, setEditId] = useState(null);
   const [editName, setEditName] = useState("");
   const [editStatus, setEditStatus] = useState("");
+
+  // Fetch departments from the API
+  const fetchDepartments = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/api/hr/get-department");
+      const data = await response.json();
+      setDepartments(data);
+    } catch (error) {
+      console.error("Error fetching departments:", error);
+    }
+  };
+
+  // Fetch departments on component mount
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
 
   // Function to handle edit
   const handleEdit = (dept) => {
@@ -31,18 +34,41 @@ const DepartmentList = () => {
   };
 
   // Function to save edit
-  const saveEdit = () => {
-    setDepartments((prev) =>
-      prev.map((dept) =>
-        dept.id === editId ? { ...dept, name: editName, status: editStatus } : dept
-      )
-    );
-    setEditId(null);
+  const saveEdit = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:4000/api/hr/update-department/${editId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: editName,
+            status: editStatus,
+          }),
+        }
+      );
+      const updatedDept = await response.json();
+      setDepartments((prev) =>
+        prev.map((dept) => (dept.id === editId ? updatedDept : dept))
+      );
+      setEditId(null);
+    } catch (error) {
+      console.error("Error saving edit:", error);
+    }
   };
 
   // Function to delete department
-  const handleDelete = (id) => {
-    setDepartments(departments.filter((dept) => dept.id !== id));
+  const handleDelete = async (id) => {
+    try {
+      await fetch(`http://localhost:4000/api/hr/delete-department/${id}`, {
+        method: "DELETE",
+      });
+      setDepartments(departments.filter((dept) => dept.id !== id));
+    } catch (error) {
+      console.error("Error deleting department:", error);
+    }
   };
 
   // Function to download data as Excel
@@ -156,8 +182,6 @@ const DepartmentList = () => {
 };
 
 export default DepartmentList;
-
-
 
 
 

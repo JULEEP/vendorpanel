@@ -1,21 +1,28 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { CSVLink } from "react-csv";
 import { FaFileCsv, FaFileExcel, FaSearch } from "react-icons/fa";
 import * as XLSX from "xlsx";
+import axios from "axios";  // Make sure to install axios via npm or yarn
 
 const EmployeeList = () => {
-  const [employees, setEmployees] = useState([
-    { id: "000028", name: "Mohmed Akram", email: "mohaafif@gmail.com", mobile: "26523333", dob: "", designation: "", joiningDate: "", status: "Active" },
-    { id: "000027", name: "Uma Stafford", email: "nocunocu@mailinator.com", mobile: "+1(617) 434-2319", dob: "", designation: "", joiningDate: "", status: "Active" },
-    { id: "000028", name: "Mohmed Akram", email: "mohaafif@gmail.com", mobile: "26523333", dob: "", designation: "", joiningDate: "", status: "Active" },
-   
-  ]);
-
+  const [employees, setEmployees] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const itemsPerPage = 5;
+
+  useEffect(() => {
+    // Fetch employees from API on component mount
+    axios.get('http://localhost:4000/api/hr/get-employees')
+      .then((response) => {
+        setEmployees(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching employees:", error);
+      });
+  }, []);
 
   const addEmployee = () => {
     setShowModal(true);
@@ -26,16 +33,30 @@ const EmployeeList = () => {
   };
 
   const resetEmployee = (id) => {
-    setEmployees(employees.filter(employee => employee.id !== id));
+    axios.get(`http://localhost:4000/api/hr/get-employees`)
+      .then((response) => {
+        setEmployees(response.data);
+      });
   };
+
   const viewEmployee = (id) => {
-    setEmployees(employees.filter(employee => employee.id !== id));
+    // Redirect or open modal to view the employee
+    console.log(`Viewing employee with ID: ${id}`);
   };
+
   const editEmployee = (id) => {
-    setEmployees(employees.filter(employee => employee.id !== id));
+    // Call the API to update employee
+    console.log(`Editing employee with ID: ${id}`);
   };
+
   const deleteEmployee = (id) => {
-    setEmployees(employees.filter(employee => employee.id !== id));
+    axios.delete(`http://localhost:4000/api/hr/delete-employees/${id}`)
+      .then(() => {
+        setEmployees(employees.filter(employee => employee.id !== id));
+      })
+      .catch((error) => {
+        console.error("Error deleting employee:", error);
+      });
   };
 
   const downloadExcel = () => {
@@ -63,6 +84,30 @@ const EmployeeList = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const newEmployee = {
+      id: event.target.id.value,
+      name: event.target.name.value,
+      email: event.target.email.value,
+      mobile: event.target.mobile.value,
+      dob: event.target.dob.value,
+      designation: event.target.designation.value,
+      joiningDate: event.target.joiningDate.value,
+      status: "Active"
+    };
+
+    // Send the POST request to create a new employee
+    axios.post("http://localhost:4000/api/hr/create-employees", newEmployee)
+      .then((response) => {
+        setEmployees([...employees, response.data]);
+        setShowModal(false);
+      })
+      .catch((error) => {
+        console.error("Error adding employee:", error);
+      });
   };
 
   return (
@@ -148,7 +193,7 @@ const EmployeeList = () => {
               <td className="p-2 border">{employee.joiningDate}</td>
               <td className="p-2 border">{employee.status}</td>
               <td className="p-2 border">
-                 <button className="p-1 mr-2 text-red-700 bg-red-100 border border-red-600 rounded" onClick={() => resetEmployee(employee.id)}>🔄</button>
+                <button className="p-1 mr-2 text-red-700 bg-red-100 border border-red-600 rounded" onClick={() => resetEmployee(employee.id)}>🔄</button>
                 <button className="p-1 mr-2 text-blue-700 bg-blue-100 border border-blue-600 rounded" onClick={() => viewEmployee(employee.id)}>👁️</button>
                 <button className="p-1 mr-2 text-blue-700 bg-blue-100 border border-blue-600 rounded" onClick={() => editEmployee(employee.id)}>✏️</button>
                 <button className="p-1 text-red-700 bg-red-100 border border-red-600 rounded" onClick={() => deleteEmployee(employee.id)}>🗑️</button>
@@ -167,14 +212,14 @@ const EmployeeList = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="w-1/2 p-6 bg-white rounded-lg shadow-lg">
             <h2 className="mb-4 text-lg font-bold">Add Employee</h2>
-            <form>
-              <input type="text" className="w-full p-2 mb-2 border rounded" placeholder="Employee Id" required />
-              <input type="text" className="w-full p-2 mb-2 border rounded" placeholder="Employee Name" required />
-              <input type="email" className="w-full p-2 mb-2 border rounded" placeholder="Email" required />
-              <input type="text" className="w-full p-2 mb-2 border rounded" placeholder="Mobile" required />
-              <input type="text" className="w-full p-2 mb-2 border rounded" placeholder="DOB" required />
-              <input type="text" className="w-full p-2 mb-2 border rounded" placeholder="Designation" required />
-              <input type="text" className="w-full p-2 mb-2 border rounded" placeholder="JoiningDate" required />
+            <form onSubmit={handleSubmit}>
+              <input type="text" name="id" className="w-full p-2 mb-2 border rounded" placeholder="Employee Id" required />
+              <input type="text" name="name" className="w-full p-2 mb-2 border rounded" placeholder="Employee Name" required />
+              <input type="email" name="email" className="w-full p-2 mb-2 border rounded" placeholder="Email" required />
+              <input type="text" name="mobile" className="w-full p-2 mb-2 border rounded" placeholder="Mobile" required />
+              <input type="text" name="dob" className="w-full p-2 mb-2 border rounded" placeholder="DOB" required />
+              <input type="text" name="designation" className="w-full p-2 mb-2 border rounded" placeholder="Designation" required />
+              <input type="text" name="joiningDate" className="w-full p-2 mb-2 border rounded" placeholder="JoiningDate" required />
               <div className="flex justify-end">
                 <button type="button" className="p-2 mr-2 text-red-700 bg-red-100 border border-red-600 rounded" onClick={handleClose}>Cancel</button>
                 <button type="submit" className="p-2 text-blue-700 bg-blue-100 border border-blue-600 rounded">Save</button>
@@ -188,3 +233,4 @@ const EmployeeList = () => {
 };
 
 export default EmployeeList;
+

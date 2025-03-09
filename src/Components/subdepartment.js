@@ -1,19 +1,24 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Pencil, Trash, PlusCircle } from "lucide-react";
+import axios from "axios";
 
 const SubDepartmentList = () => {
-  const [subDepartments, setSubDepartments] = useState([
-    { id: 1, name: "HR", department: "Electrical", status: "Active" },
-    { id: 2, name: "Accounts", department: "Electrical", status: "Active" },
-    { id: 3, name: "Finance", department: "Production", status: "Active" },
-    { id: 4, name: "Sales", department: "Production", status: "Active" },
-    { id: 5, name: "Angelica Goff", department: "Electrical", status: "Active" },
-  ]);
-
+  const [subDepartments, setSubDepartments] = useState([]);
   const [formData, setFormData] = useState({ id: null, name: "", department: "", status: "Active" });
   const [isEditing, setIsEditing] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  // Fetch subdepartments from the API when the component mounts
+  useEffect(() => {
+    axios.get("http://localhost:4000/api/hr/get-subdepartments")
+      .then(response => {
+        setSubDepartments(response.data);
+      })
+      .catch(error => {
+        console.error("There was an error fetching the subdepartments:", error);
+      });
+  }, []);
 
   // Input change handler
   const handleInputChange = (e) => {
@@ -23,12 +28,28 @@ const SubDepartmentList = () => {
   // Add or Update SubDepartment
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (isEditing) {
-      setSubDepartments(subDepartments.map(subDept => subDept.id === formData.id ? formData : subDept));
-      setIsEditing(false);
+      // Update existing subDepartment
+      axios.put(`http://localhost:4000/api/hr/update-subdepartments/${formData.id}`, formData)
+        .then(response => {
+          setSubDepartments(subDepartments.map(subDept => subDept.id === formData.id ? formData : subDept));
+          setIsEditing(false);
+        })
+        .catch(error => {
+          console.error("There was an error updating the subdepartment:", error);
+        });
     } else {
-      setSubDepartments([...subDepartments, { ...formData, id: subDepartments.length + 1 }]);
+      // Add new subDepartment
+      axios.post("http://localhost:4000/api/hr/add-subdepartments", formData)
+        .then(response => {
+          setSubDepartments([...subDepartments, response.data]);
+        })
+        .catch(error => {
+          console.error("There was an error adding the subdepartment:", error);
+        });
     }
+
     setShowModal(false);
     setFormData({ id: null, name: "", department: "", status: "Active" });
   };
@@ -42,7 +63,13 @@ const SubDepartmentList = () => {
 
   // Delete SubDepartment
   const handleDelete = (id) => {
-    setSubDepartments(subDepartments.filter(subDept => subDept.id !== id));
+    axios.delete(`http://localhost:4000/api/hr/delete-subdepartments/${id}`)
+      .then(() => {
+        setSubDepartments(subDepartments.filter(subDept => subDept.id !== id));
+      })
+      .catch(error => {
+        console.error("There was an error deleting the subdepartment:", error);
+      });
   };
 
   return (
@@ -149,4 +176,5 @@ const SubDepartmentList = () => {
 };
 
 export default SubDepartmentList;
+
 
