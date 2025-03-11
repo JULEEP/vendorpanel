@@ -20,9 +20,21 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
         { name: "Missing Attendance", path: "/missingattendance" },
       ],
     },
-    { icon: <i className="ri-trophy-fill"></i>, name: "Award" },
-    { icon: <i className="ri-government-fill"></i>, name: "Department" },
-    { icon: <i className="ri-team-fill"></i>, 
+    {
+      icon: <i className="ri-trophy-fill"></i>,
+      name: "Award",
+      dropdown: [
+        { name: "Award List", path: "/awardlist" },
+      ],
+    },    {
+      icon: <i className="ri-government-fill"></i>,
+      name: "Department",
+      dropdown: [
+        { name: "Department", path: "/department" },
+        { name: "SubDepartment", path: "/subdepartment" },
+      ]
+    },
+        { icon: <i className="ri-team-fill"></i>, 
       name: "Employee",
       dropdown: [
         { name: "Position", path: "/position" },
@@ -41,8 +53,13 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
         { name: "Leave Application", path: "/leaveapplication" },
       ],
     },
-    { icon: <i className="ri-bank-card-line"></i>, name: "Loan" },
-    { icon: <i className="ri-notification-3-fill"></i>, name: "Notice Board" },
+    {
+      icon: <i className="ri-notification-3-fill"></i>,
+      name: "Notice Board",
+      dropdown: [
+        { name: "Notice List", path: "/noticelist" },
+      ],
+    },
     { icon: <i className="ri-bank-card-line"></i>, 
       name: "Payroll",
       dropdown: [
@@ -51,12 +68,33 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
         { name: "Manage Employee Salary", path: "/Manageemployeesalary" },
       ],
      },
-    { icon: <i className="ri-building-2-fill"></i>, name: "Procurement" },
-    { icon: <i className="ri-list-check"></i>, name: "Project Management" },
-    { icon: <i className="ri-news-line"></i>, name: "Recruitment" },
-    { icon: <i className="ri-folder-chart-fill"></i>, name: "Reports" },
-    { icon: <i className="ri-star-fill"></i>, name: "Reward Points" },
-    { icon: <i className="ri-chat-2-fill"></i>, name: "Setup rules" },
+     {
+      icon: <i className="ri-list-check"></i>,
+      name: "Project Management",
+      dropdown: [
+        { name: "Clients", path: "/clients" },
+        { name: "Projects", path: "/projects" },
+        { name: "Tasks", path: "/task" },
+        { name: "Manage Tasks", path: "/manage-project" },
+
+      ],
+    },    {
+      icon: <i className="ri-news-line"></i>,
+      name: "Recruitment",
+      dropdown: [
+        { name: "Candidate List", path: "/recruitment" },
+        { name: "Candidate Shortlist", path: "/candidate-shortlist" },
+        { name: "Interview", path: "/interviewlist" },
+        { name: "Employee Selection", path: "/selectedcandidates" },
+      ],
+    },
+    {
+      icon: <i className="ri-chat-2-fill"></i>,
+      name: "Setup rules",
+      dropdown: [
+        { name: "Rule Settings", path: "/setuplist" },
+      ],
+    },
     { icon: <i className="ri-settings-2-fill"></i>, name: "Settings", 
       dropdown: [
         { name: "Setting", path: "/setting" },
@@ -64,27 +102,35 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
         { name: "Backup Reset", path: "/backupreset" },
       ]
     },
-    { icon: <i className="ri-chat-2-fill"></i>, name: "Message",},
-  ];
+    { 
+      icon: <i className="ri-chat-2-fill"></i>, 
+      name: "Message",
+      dropdown: [
+        { name: "Sent", path: "/sentlist" },
+        { name: "Send Message", path: "/message" },
+      ]
+    },
+  ]
 
   return (
     <div
-      className={`bg-[#FFFFFF] text-white transition-all duration-300 ${
+      className={`text-white transition-all duration-300 ${
         isMobile ? (isCollapsed ? "w-0" : "w-64") : isCollapsed ? "w-16" : "w-64"
       } overflow-y-scroll no-scrollbar h-full flex flex-col`}
     >
       <div className="sticky top-0 text-[#464255] p-4 font-bold bg-[#F9F9F9] flex items-end justify-center">
         {!isCollapsed || isMobile ? (
           <img
-            className="h-[7vh] w-[70%]"
-            src="https://hrm.bdtask-demoserver.com/storage/application/1716900096sidebar-logo.png"
-            alt=""
-          />
-        ) : (
-          <img
-            className="h-[5vh] w-[70%]"
-            src="https://hrm.bdtask-demoserver.com/storage/application/1716900212sidebar-collapsed-logo.png"
-          />
+          className="h-[7vh] w-[70%]"
+          src="/logo.jpeg" // Use relative path to the public folder
+          alt="Logo"
+        />
+      ) : (
+        <img
+          className="h-[5vh] w-[70%]"
+          src="/logo.jpeg" // Use relative path to the public folder
+          alt="Logo"
+        />
         )}
       </div>
       <nav className={`flex flex-col ${isCollapsed && "items-center"} space-y-4 mt-4 shadow-lg`}>

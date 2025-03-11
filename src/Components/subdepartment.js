@@ -11,7 +11,7 @@ const SubDepartmentList = () => {
 
   // Fetch subdepartments from the API when the component mounts
   useEffect(() => {
-    axios.get("http://localhost:4000/api/hr/get-subdepartments")
+    axios.get("https://hr-backend-hifb.onrender.com/api/hr/get-subdepartments")
       .then(response => {
         setSubDepartments(response.data);
       })
@@ -31,7 +31,7 @@ const SubDepartmentList = () => {
 
     if (isEditing) {
       // Update existing subDepartment
-      axios.put(`http://localhost:4000/api/hr/update-subdepartments/${formData.id}`, formData)
+      axios.put(`https://hr-backend-hifb.onrender.com/api/hr/update-subdepartments/${formData.id}`, formData)
         .then(response => {
           setSubDepartments(subDepartments.map(subDept => subDept.id === formData.id ? formData : subDept));
           setIsEditing(false);
@@ -41,7 +41,7 @@ const SubDepartmentList = () => {
         });
     } else {
       // Add new subDepartment
-      axios.post("http://localhost:4000/api/hr/add-subdepartments", formData)
+      axios.post("https://hr-backend-hifb.onrender.com/api/hr/add-subdepartments", formData)
         .then(response => {
           setSubDepartments([...subDepartments, response.data]);
         })
@@ -63,7 +63,7 @@ const SubDepartmentList = () => {
 
   // Delete SubDepartment
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:4000/api/hr/delete-subdepartments/${id}`)
+    axios.delete(`https://hr-backend-hifb.onrender.com/api/hr/delete-subdepartments/${id}`)
       .then(() => {
         setSubDepartments(subDepartments.filter(subDept => subDept.id !== id));
       })

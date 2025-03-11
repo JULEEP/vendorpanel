@@ -1,13 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { utils, writeFile } from "xlsx";
-
-const initialAwards = [
-  { id: 1, name: "Silly", description: "cdvfgbh", gift: "Pancake", date: "2025-02-02", employee: "Scarlet Melvin Reese Rogers", awardedBy: "KOZHI" },
-  { id: 2, name: "Stupid", description: "Just checking", gift: "P1000", date: "2025-02-12", employee: "Amy Aphrodite Zamora Peck", awardedBy: "Loiti" },
-  { id: 3, name: "Fool", description: "fools", gift: "nada", date: "2025-02-12", employee: "Amy Aphrodite Zamora Peck", awardedBy: "King of the fools" },
-  { id: 4, name: "Ban", description: "Anjay slebew", gift: "10", date: "2025-01-08", employee: "Dawn Cobb", awardedBy: "150" },
-];
+import axios from "axios";
 
 export default function AwardList() {
   const [search, setSearch] = useState("");
@@ -16,18 +10,38 @@ export default function AwardList() {
   const [deleteModal, setDeleteModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
   const [selectedAward, setSelectedAward] = useState(null);
-  const [formData, setFormData] = useState({ name: "", description: "", gift: "", date: "", employee: "", awardedBy: "" });
-  const [awards, setAwards] = useState(initialAwards);
+  const [formData, setFormData] = useState({
+    awardName: "",
+    description: "",
+    giftItem: "",
+    date: "",
+    employeeName: "",
+    awardedBy: "",
+  });
+  const [awards, setAwards] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 5;
 
+  // Fetch awards from the API
+  useEffect(() => {
+    axios
+      .get("https://hr-backend-hifb.onrender.com/api/hr/get-awards")
+      .then((response) => {
+        setAwards(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching awards:", error);
+      });
+  }, []);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const exportData = (type) => {
-    const filteredAwards = awards.filter((award) => award.name.toLowerCase().includes(search.toLowerCase()));
+    const filteredAwards = awards.filter((award) =>
+      award.awardName.toLowerCase().includes(search.toLowerCase())
+    );
     const ws = utils.json_to_sheet(filteredAwards);
     const wb = utils.book_new();
     utils.book_append_sheet(wb, ws, "Awards");
@@ -35,7 +49,7 @@ export default function AwardList() {
   };
 
   const handleDelete = () => {
-    const updatedAwards = awards.filter((award) => award.id !== selectedAward.id);
+    const updatedAwards = awards.filter((award) => award._id !== selectedAward._id);
     setAwards(updatedAwards);
     setDeleteModal(false);
     setSuccessModal(true);
@@ -43,7 +57,7 @@ export default function AwardList() {
 
   const handleEdit = () => {
     const updatedAwards = awards.map((award) =>
-      award.id === selectedAward.id ? { ...award, ...formData } : award
+      award._id === selectedAward._id ? { ...award, ...formData } : award
     );
     setAwards(updatedAwards);
     setEditModal(false);
@@ -51,14 +65,31 @@ export default function AwardList() {
   };
 
   const handleAddAward = () => {
-    const newAward = { id: Date.now(), ...formData };
-    setAwards([...awards, newAward]);
-    setFormData({ name: "", description: "", gift: "", date: "", employee: "", awardedBy: "" });
-    setShowModal(false);
-    setSuccessModal(true);
+    axios
+      .post("https://hr-backend-hifb.onrender.com/api/hr/add-award", {
+        ...formData,
+      })
+      .then((response) => {
+        setAwards([...awards, response.data]); // Adding the newly created award to the list
+        setFormData({
+          awardName: "",
+          description: "",
+          giftItem: "",
+          date: "",
+          employeeName: "",
+          awardedBy: "",
+        });
+        setShowModal(false);
+        setSuccessModal(true);
+      })
+      .catch((error) => {
+        console.error("Error adding award:", error);
+      });
   };
 
-  const filteredAwards = awards.filter((award) => award.name.toLowerCase().includes(search.toLowerCase()));
+  const filteredAwards = awards.filter((award) =>
+    award.awardName.toLowerCase().includes(search.toLowerCase())
+  );
   const totalPages = Math.ceil(filteredAwards.length / recordsPerPage);
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
@@ -91,18 +122,18 @@ export default function AwardList() {
             <th className="p-2 border">Gift Item</th>
             <th className="p-2 border">Date</th>
             <th className="p-2 border">Employee Name</th>
-            <th className="p-2 border">Award By</th>
+            <th className="p-2 border">Awarded By</th>
           </tr>
         </thead>
         <tbody>
           {currentRecords.map((award, index) => (
-            <tr key={award.id} className="border-b">
+            <tr key={award._id} className="border-b">
               <td className="p-2 border">{indexOfFirstRecord + index + 1}</td>
-              <td className="p-2 border">{award.name}</td>
+              <td className="p-2 border">{award.awardName}</td>
               <td className="p-2 border">{award.description}</td>
-              <td className="p-2 border">{award.gift}</td>
-              <td className="p-2 border">{award.date}</td>
-              <td className="p-2 border">{award.employee}</td>
+              <td className="p-2 border">{award.giftItem}</td>
+              <td className="p-2 border">{new Date(award.date).toLocaleDateString()}</td>
+              <td className="p-2 border">{award.employeeName}</td>
               <td className="p-2 border">{award.awardedBy}</td>
             </tr>
           ))}
@@ -118,162 +149,70 @@ export default function AwardList() {
 
       {/* Add New Award Modal */}
       {showModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md md:max-w-lg">
-      <h2 className="text-lg font-semibold mb-4">Add New Award</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md md:max-w-lg">
+            <h2 className="text-lg font-semibold mb-4">Add New Award</h2>
 
-      <input
-        className="w-full p-2 border rounded mb-2"
-        name="name"
-        value={formData.name}
-        onChange={handleInputChange}
-        placeholder="Award Name"
-      />
-      <input
-        className="w-full p-2 border rounded mb-2"
-        name="description"
-        value={formData.description}
-        onChange={handleInputChange}
-        placeholder="Description"
-      />
-      <input
-        className="w-full p-2 border rounded mb-2"
-        name="gift"
-        value={formData.gift}
-        onChange={handleInputChange}
-        placeholder="Gift Item"
-      />
-      <input
-        className="w-full p-2 border rounded mb-2"
-        name="date"
-        value={formData.date}
-        onChange={handleInputChange}
-        placeholder="Date"
-      />
-      <input
-        className="w-full p-2 border rounded mb-2"
-        name="employee"
-        value={formData.employee}
-        onChange={handleInputChange}
-        placeholder="Employee Name"
-      />
-      <input
-        className="w-full p-2 border rounded mb-2"
-        name="awardedBy"
-        value={formData.awardedBy}
-        onChange={handleInputChange}
-        placeholder="Awarded By"
-      />
+            <input
+              className="w-full p-2 border rounded mb-2"
+              name="awardName"
+              value={formData.awardName}
+              onChange={handleInputChange}
+              placeholder="Award Name"
+            />
+            <input
+              className="w-full p-2 border rounded mb-2"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder="Description"
+            />
+            <input
+              className="w-full p-2 border rounded mb-2"
+              name="giftItem"
+              value={formData.giftItem}
+              onChange={handleInputChange}
+              placeholder="Gift Item"
+            />
+            <input
+              className="w-full p-2 border rounded mb-2"
+              name="date"
+              value={formData.date}
+              onChange={handleInputChange}
+              placeholder="Date"
+            />
+            <input
+              className="w-full p-2 border rounded mb-2"
+              name="employeeName"
+              value={formData.employeeName}
+              onChange={handleInputChange}
+              placeholder="Employee Name"
+            />
+            <input
+              className="w-full p-2 border rounded mb-2"
+              name="awardedBy"
+              value={formData.awardedBy}
+              onChange={handleInputChange}
+              placeholder="Awarded By"
+            />
 
-      <div className="flex justify-end gap-2 mt-4">
-        <button
-          className="bg-gray-300 px-4 py-2 rounded"
-          onClick={() => setShowModal(false)}
-        >
-          Cancel
-        </button>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={handleAddAward}
-        >
-          Save
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
-      {/* Edit Award Modal */}
-      {editModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md md:max-w-lg">
-      <h2 className="text-lg font-semibold mb-4">Edit Award</h2>
-
-      <input
-        className="w-full p-2 border rounded mb-2"
-        name="name"
-        value={formData.name}
-        onChange={handleInputChange}
-        placeholder="Award Name"
-      />
-      <input
-        className="w-full p-2 border rounded mb-2"
-        name="description"
-        value={formData.description}
-        onChange={handleInputChange}
-        placeholder="Description"
-      />
-      <input
-        className="w-full p-2 border rounded mb-2"
-        name="gift"
-        value={formData.gift}
-        onChange={handleInputChange}
-        placeholder="Gift Item"
-      />
-      <input
-        className="w-full p-2 border rounded mb-2"
-        name="date"
-        value={formData.date}
-        onChange={handleInputChange}
-        placeholder="Date"
-      />
-      <input
-        className="w-full p-2 border rounded mb-2"
-        name="employee"
-        value={formData.employee}
-        onChange={handleInputChange}
-        placeholder="Employee Name"
-      />
-      <input
-        className="w-full p-2 border rounded mb-2"
-        name="awardedBy"
-        value={formData.awardedBy}
-        onChange={handleInputChange}
-        placeholder="Awarded By"
-      />
-
-      <div className="flex justify-end gap-2 mt-4">
-        <button
-          className="bg-gray-300 px-4 py-2 rounded"
-          onClick={() => setEditModal(false)}
-        >
-          Cancel
-        </button>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={handleEdit}
-        >
-          Save
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-      {/* Delete Modal */}
-      {deleteModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md md:max-w-lg">
-      <h2 className="text-lg font-semibold mb-4">Are you sure to remove?</h2>
-      <div className="flex justify-end gap-2 mt-4">
-        <button
-          className="bg-gray-300 px-4 py-2 rounded"
-          onClick={() => setDeleteModal(false)}
-        >
-          Cancel
-        </button>
-        <button
-          className="bg-red-500 text-white px-4 py-2 rounded"
-          onClick={handleDelete}
-        >
-          Yes
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                className="bg-gray-300 px-4 py-2 rounded"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={handleAddAward}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Success Modal */}
       {successModal && (

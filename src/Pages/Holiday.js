@@ -1,29 +1,58 @@
 import { differenceInDays, format } from "date-fns";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 
 const HolidayList = () => {
-  const [holidays, setHolidays] = useState([
-    { id: 1, name: "Christmas", from: "2024-12-25", to: "2024-12-26" },
-    { id: 2, name: "Diwali", from: "2024-11-11", to: "2024-11-14" },
-  ]);
+  const [holidays, setHolidays] = useState([]);
   const [modalData, setModalData] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
+  // Fetch holidays from the server on component mount
+  useEffect(() => {
+    axios.get("https://hr-backend-hifb.onrender.com/api/hr/get-holidays")
+      .then(response => {
+        setHolidays(response.data.holidays);
+      })
+      .catch(error => {
+        console.error("Error fetching holidays:", error);
+      });
+  }, []);
+
   const handleDelete = (id) => {
-    setHolidays(holidays.filter((holiday) => holiday.id !== id));
+    axios.delete(`https://hr-backend-hifb.onrender.com/api/hr/delete-holiday/${id}`)
+      .then(() => {
+        setHolidays(holidays.filter((holiday) => holiday._id !== id));
+      })
+      .catch(error => {
+        console.error("Error deleting holiday:", error);
+      });
   };
 
   const handleSave = (holiday) => {
-    if (holiday.id) {
-      setHolidays(
-        holidays.map((h) => (h.id === holiday.id ? holiday : h))
-      );
+    if (holiday._id) {
+      // Update existing holiday
+      axios.put(`https://hr-backend-hifb.onrender.com/api/hr/update-holiday/${holiday._id}`, holiday)
+        .then(response => {
+          setHolidays(holidays.map((h) => (h._id === holiday._id ? response.data : h)));
+        })
+        .catch(error => {
+          console.error("Error updating holiday:", error);
+        });
     } else {
-      setHolidays([
-        ...holidays,
-        { ...holiday, id: holidays.length + 1 },
-      ]);
+      // Create new holiday
+      axios.post("https://hr-backend-hifb.onrender.com/api/hr/create-holidays", {
+        name: holiday.name,
+        fromDate: holiday.from,
+        toDate: holiday.to,
+        totalDays: differenceInDays(new Date(holiday.to), new Date(holiday.from)) + 1,
+      })
+        .then(response => {
+          setHolidays([...holidays, response.data.holiday]);
+        })
+        .catch(error => {
+          console.error("Error creating holiday:", error);
+        });
     }
     setShowModal(false);
   };
@@ -55,14 +84,12 @@ const HolidayList = () => {
         </thead>
         <tbody>
           {holidays.map((holiday, index) => (
-            <tr key={holiday.id} className="border-t">
+            <tr key={holiday._id} className="border-t">
               <td className="p-2">{index + 1}</td>
               <td className="p-2">{holiday.name}</td>
-              <td className="p-2">{format(new Date(holiday.from), "yyyy-MM-dd")}</td>
-              <td className="p-2">{format(new Date(holiday.to), "yyyy-MM-dd")}</td>
-              <td className="p-2">
-                {differenceInDays(new Date(holiday.to), new Date(holiday.from)) + 1}
-              </td>
+              <td className="p-2">{format(new Date(holiday.fromDate), "yyyy-MM-dd")}</td>
+              <td className="p-2">{format(new Date(holiday.toDate), "yyyy-MM-dd")}</td>
+              <td className="p-2">{differenceInDays(new Date(holiday.toDate), new Date(holiday.fromDate)) + 1}</td>
               <td className="flex gap-2 p-2">
                 <button
                   className="text-blue-600"
@@ -73,7 +100,7 @@ const HolidayList = () => {
                 >
                   <FaEdit />
                 </button>
-                <button className="text-red-600" onClick={() => handleDelete(holiday.id)}>
+                <button className="text-red-600" onClick={() => handleDelete(holiday._id)}>
                   <FaTrash />
                 </button>
               </td>
@@ -94,12 +121,12 @@ const HolidayList = () => {
 
 const HolidayModal = ({ data, onClose, onSave }) => {
   const [name, setName] = useState(data?.name || "");
-  const [from, setFrom] = useState(data?.from || "");
-  const [to, setTo] = useState(data?.to || "");
+  const [from, setFrom] = useState(data?.fromDate || "");
+  const [to, setTo] = useState(data?.toDate || "");
 
   const handleSubmit = () => {
     if (name && from && to) {
-      onSave({ id: data?.id, name, from, to });
+      onSave({ _id: data?._id, name, from, to });
     }
   };
 

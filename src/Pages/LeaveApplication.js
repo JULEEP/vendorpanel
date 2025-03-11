@@ -24,7 +24,7 @@ const LeaveApplicationList = () => {
   useEffect(() => {
     const fetchLeaveApplications = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/hr/all-leaves");
+        const response = await fetch("https://hr-backend-hifb.onrender.com/api/hr/all-leaves");
         const data = await response.json();
         setLeaveApplications(data);
       } catch (error) {
@@ -87,7 +87,7 @@ const LeaveApplicationList = () => {
     console.log("Data being sent:", leaveApplicationData); // Log data for debugging
 
     try {
-      const response = await fetch("http://localhost:4000/api/hr/create-leaveapplication", {
+      const response = await fetch("https://hr-backend-hifb.onrender.com/api/hr/create-leaveapplication", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

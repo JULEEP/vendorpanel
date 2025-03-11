@@ -12,7 +12,7 @@ const PositionList = () => {
   useEffect(() => {
     const fetchPositions = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/hr/get-position");
+        const response = await axios.get("https://hr-backend-hifb.onrender.com/api/hr/get-position");
         setPositions(response.data);
       } catch (error) {
         console.error("Error fetching positions:", error);
@@ -30,7 +30,7 @@ const PositionList = () => {
   const handleSubmit = async () => {
     if (formData.name && formData.details) {
       try {
-        const response = await axios.post("http://localhost:4000/api/hr/create-position", {
+        const response = await axios.post("https://hr-backend-hifb.onrender.com/api/hr/create-position", {
           positionName: formData.name,
           status: formData.status,
           positionDetails: formData.details,
@@ -54,7 +54,7 @@ const PositionList = () => {
   const handleUpdate = async () => {
     if (currentPosition) {
       try {
-        const response = await axios.put(`http://localhost:4000/api/hr/update-position/${currentPosition._id}`, {
+        const response = await axios.put(`https://hr-backend-hifb.onrender.com/api/hr/update-position/${currentPosition._id}`, {
           positionName: formData.name,
           status: formData.status,
           positionDetails: formData.details,
@@ -77,7 +77,7 @@ const PositionList = () => {
   const handleDelete = async (id) => {
     try {
       // Call the DELETE API
-      const response = await axios.delete(`http://localhost:4000/api/hr/delete-position/${id}`);
+      const response = await axios.delete(`https://hr-backend-hifb.onrender.com/api/hr/delete-position/${id}`);
 
       // Remove the deleted position from the list in state
       if (response.status === 200) {

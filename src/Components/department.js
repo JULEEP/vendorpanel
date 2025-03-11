@@ -13,7 +13,7 @@ const DepartmentList = () => {
   // Fetch departments from the API
   const fetchDepartments = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/hr/get-department");
+      const response = await fetch("https://hr-backend-hifb.onrender.com/api/hr/get-department");
       const data = await response.json();
       setDepartments(data);
     } catch (error) {
@@ -37,7 +37,7 @@ const DepartmentList = () => {
   const saveEdit = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/hr/update-department/${editId}`,
+        `https://hr-backend-hifb.onrender.com/api/hr/update-department/${editId}`,
         {
           method: "PUT",
           headers: {
@@ -62,7 +62,7 @@ const DepartmentList = () => {
   // Function to delete department
   const handleDelete = async (id) => {
     try {
-      await fetch(`http://localhost:4000/api/hr/delete-department/${id}`, {
+      await fetch(`https://hr-backend-hifb.onrender.com/api/hr/delete-department/${id}`, {
         method: "DELETE",
       });
       setDepartments(departments.filter((dept) => dept.id !== id));

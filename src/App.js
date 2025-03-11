@@ -32,6 +32,13 @@ import NoticeList from "./Pages/Noticelist.js";
 import SentMessagesTable from "./Pages/Sent.js";
 import Setting from "./Pages/Setting";
 import SetupRulesTable from "./Pages/Setup.js";
+import CandidateShortlist from "./Pages/CandidateShortlist.js";
+import InterviewList from "./Pages/InterviewList.js";
+import CandidateSelection from "./Pages/CandidateSelection.js";
+import ClientsTable from "./Pages/ClientsTable.js";
+import ProjectsTable from "./Pages/ProjectsTable.js";
+import ProjectTasksTable from "./Pages/ProjectTasksTable.js";
+import ManageProjects from "./Pages/ManageProject.js";
 
 
 
@@ -68,6 +75,14 @@ function App() {
         <Route path="/salaryadvance" element={<SalaryAdvance />} />
         <Route path="/salarygenerate" element={<SalaryGenerate />} />
         <Route path="/manageemployeesalary" element={<Manageemployeesalary />} />
+        <Route path="/candidate-shortlist" element={<CandidateShortlist />} />
+        <Route path="/interviewlist" element={<InterviewList />} />
+        <Route path="/selectedcandidates" element={<CandidateSelection />} />
+        <Route path="/clients" element={<ClientsTable />} />
+        <Route path="/projects" element={<ProjectsTable />} />
+        <Route path="/task" element={<ProjectTasksTable />} />
+        <Route path="/manage-project" element={<ManageProjects />} />
+
 
 
       </Routes>
