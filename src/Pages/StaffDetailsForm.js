@@ -2,47 +2,51 @@ import React, { useState } from "react";
 import axios from "axios"; // import axios
 import { useNavigate } from "react-router-dom";
 
-const Settings = ({ userId, closeModal }) => {
+const StaffDetailsForm = ({ companyId, closeModal }) => {
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
+  const [department, setDepartment] = useState("");
   const [contactNumber, setContactNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [dob, setDob] = useState("");
   const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
+  const [address, setAddress] = useState("");
   const [profileImage, setProfileImage] = useState(null);
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [notifications, setNotifications] = useState(false); // To toggle notifications
+  const [idImage, setIdImage] = useState(null); // second image
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
     formData.append("name", name);
-    formData.append("email", email);
+    formData.append("role", role);
+    formData.append("department", department);
     formData.append("contact_number", contactNumber);
+    formData.append("email", email);
     formData.append("dob", dob);
     formData.append("gender", gender);
-    formData.append("new_password", newPassword);
-    formData.append("confirm_password", confirmPassword);
-    formData.append("notifications", notifications);
+    formData.append("age", age);
+    formData.append("address", address);
     if (profileImage) formData.append("profile_image", profileImage);
+    if (idImage) formData.append("id_image", idImage);
 
     try {
-      const response = await axios.put(
-        `http://localhost:4000/api/user/update-settings/${userId}`,
+      const response = await axios.post(
+        `https://credenhealth.onrender.com/api/admin/create-staff/${companyId}`,
         formData
       );
 
-      if (response.status === 200) {
-        alert("Settings updated successfully");
+      if (response.status === 201) {
+        alert("Staff profile created and linked to company successfully");
         closeModal(); // Close the modal after successful submission
         navigate("/"); // Redirect to home or other page
       }
     } catch (error) {
-      console.error("Error updating settings:", error);
-      alert("Failed to update settings.");
+      console.error("Error creating staff profile:", error);
+      alert("Failed to create staff profile.");
     }
   };
 
@@ -50,9 +54,13 @@ const Settings = ({ userId, closeModal }) => {
     setProfileImage(e.target.files[0]);
   };
 
+  const handleIdImageChange = (e) => {
+    setIdImage(e.target.files[0]);
+  };
+
   return (
     <div className="p-6 bg-white rounded shadow">
-      <h3 className="text-lg font-bold mb-4">Settings</h3>
+      <h3 className="text-lg font-bold mb-4">Staff Details</h3>
       <form onSubmit={handleSubmit}>
         <div className="flex gap-4 mb-4">
           <div className="w-1/4">
@@ -65,11 +73,20 @@ const Settings = ({ userId, closeModal }) => {
           </div>
 
           <div className="w-1/4">
-            <label className="block text-sm mb-1">Email</label>
+            <label className="block text-sm mb-1">Role</label>
             <input
               className="p-2 border rounded w-full"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            />
+          </div>
+
+          <div className="w-1/4">
+            <label className="block text-sm mb-1">Department</label>
+            <input
+              className="p-2 border rounded w-full"
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
             />
           </div>
 
@@ -79,6 +96,17 @@ const Settings = ({ userId, closeModal }) => {
               className="p-2 border rounded w-full"
               value={contactNumber}
               onChange={(e) => setContactNumber(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-4 mb-4">
+          <div className="w-1/4">
+            <label className="block text-sm mb-1">Email</label>
+            <input
+              className="p-2 border rounded w-full"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
@@ -91,9 +119,7 @@ const Settings = ({ userId, closeModal }) => {
               onChange={(e) => setDob(e.target.value)}
             />
           </div>
-        </div>
 
-        <div className="flex gap-4 mb-4">
           <div className="w-1/4">
             <label className="block text-sm mb-1">Gender</label>
             <select
@@ -106,6 +132,27 @@ const Settings = ({ userId, closeModal }) => {
               <option value="Female">Female</option>
               <option value="Other">Other</option>
             </select>
+          </div>
+
+          <div className="w-1/4">
+            <label className="block text-sm mb-1">Age</label>
+            <input
+              type="number"
+              className="p-2 border rounded w-full"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-4 mb-4">
+          <div className="w-2/4">
+            <label className="block text-sm mb-1">Address</label>
+            <input
+              className="p-2 border rounded w-full"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
           </div>
 
           <div className="w-1/4">
@@ -125,42 +172,23 @@ const Settings = ({ userId, closeModal }) => {
               />
             )}
           </div>
-        </div>
 
-        <div className="flex gap-4 mb-4">
           <div className="w-1/4">
-            <label className="block text-sm mb-1">New Password</label>
+            <label className="block text-sm mb-1">ID Proof Image</label>
             <input
-              type="password"
+              type="file"
+              accept="image/*"
+              onChange={handleIdImageChange}
               className="p-2 border rounded w-full"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
             />
-          </div>
-
-          <div className="w-1/4">
-            <label className="block text-sm mb-1">Confirm Password</label>
-            <input
-              type="password"
-              className="p-2 border rounded w-full"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-4 mb-4">
-          <div className="w-1/4">
-            <label className="block text-sm mb-1">Notifications</label>
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                checked={notifications}
-                onChange={(e) => setNotifications(e.target.checked)}
-                className="mr-2"
+            {idImage && (
+              <img
+                src={URL.createObjectURL(idImage)}
+                alt="ID Preview"
+                className="mt-2 rounded border"
+                style={{ height: "80px", width: "auto" }}
               />
-              <span>Enable Notifications</span>
-            </div>
+            )}
           </div>
         </div>
 
@@ -176,7 +204,7 @@ const Settings = ({ userId, closeModal }) => {
             type="submit"
             className="px-4 py-2 text-blue-700 bg-blue-100 border border-blue-600 rounded"
           >
-            Save Changes
+            Submit
           </button>
         </div>
       </form>
@@ -184,4 +212,4 @@ const Settings = ({ userId, closeModal }) => {
   );
 };
 
-export default Settings;
+export default StaffDetailsForm;

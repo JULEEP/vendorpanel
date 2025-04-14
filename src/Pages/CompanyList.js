@@ -1,0 +1,292 @@
+import React, { useEffect, useState } from "react";
+import { FaFileCsv, FaEdit, FaTrash, FaUpload } from "react-icons/fa";
+import { CSVLink } from "react-csv";
+import * as XLSX from "xlsx";
+import { useNavigate } from "react-router-dom";
+import StaffDetailsForm from "./StaffDetailsForm";
+
+const CompanyList = () => {
+  const [companies, setCompanies] = useState([]);
+  const [search, setSearch] = useState("");
+  const [isEditingCompanyModalOpen, setIsEditingCompanyModalOpen] = useState(false);
+  const [isAddingBeneficiaryModalOpen, setIsAddingBeneficiaryModalOpen] = useState(false);
+  const [selectedCompanyId, setSelectedCompanyId] = useState(null);
+  const [companyDetails, setCompanyDetails] = useState({});
+  const [isBeneficiaryModalOpen, setIsBeneficiaryModalOpen] = useState(false);
+
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const response = await fetch("https://credenhealth.onrender.com/api/admin/companies");
+        const result = await response.json();
+        if (response.ok) {
+          setCompanies(result.companies || []);
+        } else {
+          console.error("Error fetching companies:", result.message);
+        }
+      } catch (error) {
+        console.error("Error fetching companies:", error);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
+
+  const filteredCompanies = companies.filter(company =>
+    company.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const headers = [
+    { label: "Name", key: "name" },
+    { label: "Company Type", key: "companyType" },
+    { label: "Assign By", key: "assignedBy" },
+    { label: "Registration Date", key: "registrationDate" },
+    { label: "Contract Period", key: "contractPeriod" },
+    { label: "Renewal Date", key: "renewalDate" },
+    { label: "Insurance Broker", key: "insuranceBroker" },
+    { label: "Email", key: "email" },
+    { label: "Phone", key: "phone" },
+    { label: "Strength", key: "companyStrength" },
+  ];
+
+  const handleBulkImport = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const parsedData = XLSX.utils.sheet_to_json(worksheet);
+
+        console.log("Imported Data:", parsedData);
+        alert("Data imported successfully!");
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  };
+
+  const handleEdit = (id) => {
+    const company = companies.find(c => c._id === id);
+    if (company) {
+      setCompanyDetails(company);
+      setSelectedCompanyId(id);
+      setIsEditingCompanyModalOpen(true);
+    }
+  };
+
+  const handleDelete = (id) => {
+    setCompanies(companies.filter(company => company._id !== id));
+  };
+
+  const closeCompanyEditModal = () => {
+    setIsEditingCompanyModalOpen(false);
+    setSelectedCompanyId(null);
+    setCompanyDetails({});
+  };
+
+
+  const closeBeneficiaryModal = () => {
+    setIsAddingBeneficiaryModalOpen(false); // Close the modal
+    setSelectedCompanyId(null); // Reset selected company ID
+    setCompanyDetails({}); // Optionally reset any company-specific details
+  };
+  
+  const handleViewStaff = (companyId) => {
+    if (companyId) {
+      navigate(`/stafflist?companyId=${companyId}`);
+    } else {
+      console.error("companyId is undefined or null");
+    }
+  };
+
+  const handleAddBeneficiary = (companyId) => {
+    setSelectedCompanyId(companyId);
+    setIsAddingBeneficiaryModalOpen(true);
+  };
+
+  const handleSubmitEdit = async (e) => {
+    e.preventDefault();
+    const response = await fetch(`https://credenhealth.onrender.com/api/admin/companies/${selectedCompanyId}`, {
+      method: 'PUT',
+      body: JSON.stringify(companyDetails),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const result = await response.json();
+    if (response.ok) {
+      alert("Company details updated successfully!");
+      setCompanies(companies.map(company => company._id === selectedCompanyId ? result.company : company));
+      closeCompanyEditModal();
+    } else {
+      alert("Failed to update company details");
+    }
+  };
+
+  return (
+    <div className="p-4 bg-white rounded shadow text-sm">
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-lg font-semibold">Company List</h2>
+      </div>
+
+      <div className="mb-3 flex flex-wrap gap-2">
+        <input
+          type="text"
+          className="px-2 py-1 border rounded text-sm w-64"
+          placeholder="Search by company name..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <CSVLink
+          data={filteredCompanies}
+          headers={headers}
+          filename="company_list.csv"
+          className="px-3 py-1 bg-green-500 text-white rounded flex items-center gap-1"
+        >
+          <FaFileCsv /> CSV
+        </CSVLink>
+
+        <label
+          htmlFor="file-upload"
+          className="px-3 py-1 bg-purple-600 text-white rounded flex items-center gap-1 cursor-pointer"
+        >
+          <FaUpload /> Import
+          <input
+            id="file-upload"
+            type="file"
+            accept=".xlsx, .xls"
+            onChange={handleBulkImport}
+            className="hidden"
+          />
+        </label>
+      </div>
+
+      <div className="overflow-x-auto">
+        <div className="max-h-[400px] overflow-y-auto border rounded">
+          <table className="min-w-[1000px] border-collapse text-xs">
+            <thead className="bg-gray-100 sticky top-0 z-10">
+              <tr>
+                {headers.map((header, idx) => (
+                  <th key={idx} className="p-2 border">{header.label}</th>
+                ))}
+                <th className="p-2 border">Actions</th>
+                <th className="p-2 border">View Staff</th>
+                <th className="p-2 border">Add Beneficiary</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredCompanies.map((company, idx) => (
+                <tr key={idx} className="hover:bg-gray-50">
+                  <td className="p-2 border">{company.name}</td>
+                  <td className="p-2 border">{company.companyType}</td>
+                  <td className="p-2 border">{company.assignedBy}</td>
+                  <td className="p-2 border">{company.registrationDate?.slice(0, 10)}</td>
+                  <td className="p-2 border">{company.contractPeriod}</td>
+                  <td className="p-2 border">{company.renewalDate?.slice(0, 10)}</td>
+                  <td className="p-2 border">{company.insuranceBroker}</td>
+                  <td className="p-2 border">{company.email}</td>
+                  <td className="p-2 border">{company.phone}</td>
+                  <td className="p-2 border">{company.companyStrength}</td>
+                  <td className="p-2 border text-center">
+                    <div className="flex justify-center gap-2">
+                      <button onClick={() => handleEdit(company._id)} className="text-blue-500 hover:text-blue-700">
+                        <FaEdit />
+                      </button>
+                      <button onClick={() => handleDelete(company._id)} className="text-red-500 hover:text-red-700">
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </td>
+                  <td className="p-2 border text-center">
+                    <button
+                      onClick={() => handleViewStaff(company._id)}
+                      className="px-4 py-2 bg-purple-900 text-white rounded text-sm"
+                    >
+                      View
+                    </button>
+                  </td>
+                  <td className="p-2 border text-center">
+                    <button
+                      onClick={() => handleAddBeneficiary(company._id)}
+                      className="px-4 py-2 bg-green-500 text-white rounded text-sm"
+                    >
+                      Add
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {filteredCompanies.length === 0 && (
+                <tr>
+                  <td colSpan={headers.length + 2} className="text-center p-3 text-gray-500">
+                    No companies found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Modal for Editing Company */}
+      {isEditingCompanyModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 w-[90%] max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl relative">
+            <button
+              className="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl font-bold"
+              onClick={closeCompanyEditModal}
+            >
+              ×
+            </button>
+            <h3 className="text-xl mb-4">Edit Company</h3>
+            <form onSubmit={handleSubmitEdit}>
+              <div className="mb-4">
+                <label className="block text-sm mb-2">Company Name</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded"
+                  value={companyDetails.name || ""}
+                  onChange={(e) => setCompanyDetails({ ...companyDetails, name: e.target.value })}
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm mb-2">Company Type</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded"
+                  value={companyDetails.companyType || ""}
+                  onChange={(e) => setCompanyDetails({ ...companyDetails, companyType: e.target.value })}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <button type="button" className="px-4 py-2 bg-gray-300 text-black rounded" onClick={closeCompanyEditModal}>Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      
+{/* Modal for Adding Beneficiary */}
+{isAddingBeneficiaryModalOpen && (
+  <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="bg-white rounded-lg p-6 w-[90%] max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl relative">
+      <button
+        className="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl font-bold"
+        onClick={closeBeneficiaryModal} // Ensure this is being called
+      >
+        ×
+      </button>
+      <StaffDetailsForm companyId={selectedCompanyId} closeModal={closeBeneficiaryModal} />
+    </div>
+  </div>
+)}
+    </div>
+  );
+};
+
+export default CompanyList;
