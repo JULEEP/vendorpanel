@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { CSVLink } from "react-csv";
 import { FaFileExcel, FaFileCsv, FaEdit, FaTrash } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -23,7 +22,7 @@ const DoctorAppointmentList = () => {
     try {
       const res = await axios.get("https://credenhealth.onrender.com/api/admin/alldoctorbookings");
       console.log("API RESPONSE:", res.data); // 👈 CHECK THIS
-  
+
       if (res.data && res.data.appointments) {
         setAppointments(res.data.appointments);
       } else {
@@ -34,17 +33,31 @@ const DoctorAppointmentList = () => {
     }
   };
 
-  const handleStatusUpdate = () => {
-    const updated = appointments.map((appt) =>
-      appt.appointmentId === editAppointment.appointmentId
-        ? { ...appt, status: newStatus }
-        : appt
-    );
-    setAppointments(updated);
-    setEditAppointment(null);
-    setNewStatus("");
-    // Optionally: Send PUT request to backend
+  const handleStatusUpdate = async () => {
+    try {
+      const lowercaseStatus = newStatus.toLowerCase(); // Convert status to lowercase
+  
+      const res = await axios.put(
+        `https://credenhealth.onrender.com/api/admin/updatestatus/${editAppointment.appointmentId}`,
+        { newStatus: lowercaseStatus }
+      );
+  
+      if (res.status === 200) {
+        // ✅ Remove the updated appointment from the list
+        const updatedAppointments = appointments.filter(
+          (appt) => appt.appointmentId !== editAppointment.appointmentId
+        );
+        setAppointments(updatedAppointments);
+  
+        // Reset the form state
+        setEditAppointment(null);
+        setNewStatus("");
+      }
+    } catch (error) {
+      console.error("Failed to update appointment status:", error);
+    }
   };
+  
 
   const handleDelete = (id) => {
     setAppointments(appointments.filter((a) => a.appointmentId !== id));
@@ -100,14 +113,6 @@ const DoctorAppointmentList = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <CSVLink
-          data={filteredAppointments}
-          headers={headers}
-          filename="doctor_appointments.csv"
-          className="px-4 py-2 bg-green-500 text-white rounded text-sm flex items-center gap-1"
-        >
-          <FaFileCsv /> CSV
-        </CSVLink>
         <button
           onClick={exportToExcel}
           className="px-4 py-2 bg-green-500 text-white rounded text-sm flex items-center gap-1"
@@ -205,10 +210,10 @@ const DoctorAppointmentList = () => {
               value={newStatus}
               onChange={(e) => setNewStatus(e.target.value)}
             >
-              <option value="Pending">Pending</option>
-              <option value="Confirmed">Confirmed</option>
-              <option value="Completed">Completed</option>
-              <option value="Cancelled">Cancelled</option>
+              <option value="rejected">Select</option>
+              <option value="accepted">Accepted</option>
+              <option value="rejected">Rejected</option>
+
             </select>
             <div className="flex justify-end gap-2">
               <button

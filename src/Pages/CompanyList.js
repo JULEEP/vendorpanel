@@ -8,12 +8,13 @@ import StaffDetailsForm from "./StaffDetailsForm";
 const CompanyList = () => {
   const [companies, setCompanies] = useState([]);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const companiesPerPage = 5;
+
   const [isEditingCompanyModalOpen, setIsEditingCompanyModalOpen] = useState(false);
   const [isAddingBeneficiaryModalOpen, setIsAddingBeneficiaryModalOpen] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
   const [companyDetails, setCompanyDetails] = useState({});
-  const [isBeneficiaryModalOpen, setIsBeneficiaryModalOpen] = useState(false);
-
 
   const navigate = useNavigate();
 
@@ -31,13 +32,22 @@ const CompanyList = () => {
         console.error("Error fetching companies:", error);
       }
     };
-
     fetchCompanies();
   }, []);
 
   const filteredCompanies = companies.filter(company =>
     company.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  // Pagination Logic
+  const indexOfLastCompany = currentPage * companiesPerPage;
+  const indexOfFirstCompany = indexOfLastCompany - companiesPerPage;
+  const currentCompanies = filteredCompanies.slice(indexOfFirstCompany, indexOfLastCompany);
+  const totalPages = Math.ceil(filteredCompanies.length / companiesPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
 
   const headers = [
     { label: "Name", key: "name" },
@@ -61,7 +71,6 @@ const CompanyList = () => {
         const workbook = XLSX.read(data, { type: "array" });
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const parsedData = XLSX.utils.sheet_to_json(worksheet);
-
         console.log("Imported Data:", parsedData);
         alert("Data imported successfully!");
       };
@@ -88,19 +97,14 @@ const CompanyList = () => {
     setCompanyDetails({});
   };
 
-
   const closeBeneficiaryModal = () => {
-    setIsAddingBeneficiaryModalOpen(false); // Close the modal
-    setSelectedCompanyId(null); // Reset selected company ID
-    setCompanyDetails({}); // Optionally reset any company-specific details
+    setIsAddingBeneficiaryModalOpen(false);
+    setSelectedCompanyId(null);
+    setCompanyDetails({});
   };
-  
+
   const handleViewStaff = (companyId) => {
-    if (companyId) {
-      navigate(`/stafflist?companyId=${companyId}`);
-    } else {
-      console.error("companyId is undefined or null");
-    }
+    navigate(`/stafflist?companyId=${companyId}`);
   };
 
   const handleAddBeneficiary = (companyId) => {
@@ -139,7 +143,10 @@ const CompanyList = () => {
           className="px-2 py-1 border rounded text-sm w-64"
           placeholder="Search by company name..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1); // Reset to page 1 on search
+          }}
         />
 
         <CSVLink
@@ -180,7 +187,7 @@ const CompanyList = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredCompanies.map((company, idx) => (
+              {currentCompanies.map((company, idx) => (
                 <tr key={idx} className="hover:bg-gray-50">
                   <td className="p-2 border">{company.name}</td>
                   <td className="p-2 border">{company.companyType}</td>
@@ -203,26 +210,20 @@ const CompanyList = () => {
                     </div>
                   </td>
                   <td className="p-2 border text-center">
-                    <button
-                      onClick={() => handleViewStaff(company._id)}
-                      className="px-4 py-2 bg-purple-900 text-white rounded text-sm"
-                    >
+                    <button onClick={() => handleViewStaff(company._id)} className="px-4 py-2 bg-purple-900 text-white rounded text-sm">
                       View
                     </button>
                   </td>
                   <td className="p-2 border text-center">
-                    <button
-                      onClick={() => handleAddBeneficiary(company._id)}
-                      className="px-4 py-2 bg-green-500 text-white rounded text-sm"
-                    >
+                    <button onClick={() => handleAddBeneficiary(company._id)} className="px-4 py-2 bg-green-500 text-white rounded text-sm">
                       Add
                     </button>
                   </td>
                 </tr>
               ))}
-              {filteredCompanies.length === 0 && (
+              {currentCompanies.length === 0 && (
                 <tr>
-                  <td colSpan={headers.length + 2} className="text-center p-3 text-gray-500">
+                  <td colSpan={headers.length + 3} className="text-center p-3 text-gray-500">
                     No companies found.
                   </td>
                 </tr>
@@ -232,16 +233,30 @@ const CompanyList = () => {
         </div>
       </div>
 
-      {/* Modal for Editing Company */}
+      {/* Pagination Controls */}
+      <div className="mt-4 flex justify-center items-center gap-2 text-sm">
+        <button onClick={prevPage} disabled={currentPage === 1} className="px-2 py-1 bg-gray-200 rounded disabled:opacity-50">
+          Previous
+        </button>
+        {[...Array(totalPages)].map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => paginate(idx + 1)}
+            className={`px-3 py-1 rounded ${currentPage === idx + 1 ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+          >
+            {idx + 1}
+          </button>
+        ))}
+        <button onClick={nextPage} disabled={currentPage === totalPages} className="px-2 py-1 bg-gray-200 rounded disabled:opacity-50">
+          Next
+        </button>
+      </div>
+
+      {/* Edit Company Modal */}
       {isEditingCompanyModalOpen && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 w-[90%] max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl relative">
-            <button
-              className="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl font-bold"
-              onClick={closeCompanyEditModal}
-            >
-              ×
-            </button>
+            <button className="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl font-bold" onClick={closeCompanyEditModal}>×</button>
             <h3 className="text-xl mb-4">Edit Company</h3>
             <form onSubmit={handleSubmitEdit}>
               <div className="mb-4">
@@ -270,21 +285,16 @@ const CompanyList = () => {
           </div>
         </div>
       )}
-      
-{/* Modal for Adding Beneficiary */}
-{isAddingBeneficiaryModalOpen && (
-  <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-    <div className="bg-white rounded-lg p-6 w-[90%] max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl relative">
-      <button
-        className="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl font-bold"
-        onClick={closeBeneficiaryModal} // Ensure this is being called
-      >
-        ×
-      </button>
-      <StaffDetailsForm companyId={selectedCompanyId} closeModal={closeBeneficiaryModal} />
-    </div>
-  </div>
-)}
+
+      {/* Add Beneficiary Modal */}
+      {isAddingBeneficiaryModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 w-[90%] max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl relative">
+            <button className="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl font-bold" onClick={closeBeneficiaryModal}>×</button>
+            <StaffDetailsForm companyId={selectedCompanyId} closeModal={closeBeneficiaryModal} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

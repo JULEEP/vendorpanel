@@ -1,10 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-const Sidebar = ({ isCollapsed, isMobile }) => {
+const CompanySidebar = ({ isCollapsed, isMobile }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [companyName, setCompanyName] = useState(""); // State to store company name
+
+  // Fetch company name from localStorage
+  useEffect(() => {
+    const storedCompanyName = localStorage.getItem("companyName");
+    if (storedCompanyName) {
+      setCompanyName(storedCompanyName); // Set company name from localStorage
+    }
+  }, []);
 
   const toggleDropdown = (name) => {
     setOpenDropdown(openDropdown === name ? null : name);
@@ -12,11 +21,17 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("https://credenhealth.onrender.com/api/admin/logout", {}, { withCredentials: true });
-
+      // API call to logout the company
+      await axios.post("https://credenhealth.onrender.com/api/admin/logout-company", {}, { withCredentials: true });
+      
+      // Clear localStorage data
       localStorage.removeItem("authToken");
+      localStorage.removeItem("companyId");
+      localStorage.removeItem("companyName");
+
+      // Show success message and redirect to login page
       alert("Logout successful");
-      window.location.href = "/";
+      window.location.href = "/company-login"; // Redirecting to the login page
     } catch (error) {
       console.error("Logout error:", error);
       alert("Logout failed. Please try again.");
@@ -25,51 +40,24 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
 
   const elements = [
     {
-      icon: <i className="ri-home-fill text-purple-600"></i>,
-      name: "Home",
-      path: "/dashboard",
+      icon: <i className="ri-home-2-fill text-purple-600"></i>,
+      name: "Dashboard",
+      path: "/company/companydashboard",
     },
     {
-      icon: <i className="ri-building-fill text-purple-600"></i>,
-      name: "Companies",
+      icon: <i className="ri-profile-fill text-purple-600"></i>,
+      name: "Profile",
       dropdown: [
-        { name: "Add Company", path: "/company-register" },
-        { name: "Company List", path: "/companylist" },
+        { name: "View Profile", path: "/company/profile" },
       ],
     },
     {
-      icon: <i className="ri-file-search-fill text-purple-600"></i>,
-      name: "Diagnostics",
+      icon: <i className="ri-hand-heart-fill text-purple-600"></i>,
+      name: "Beneficiary",
       dropdown: [
-        { name: "Add Diagnostics", path: "/create-diagnostic" },
-        { name: "Diagnostics List", path: "/diagnosticlist" },
-        { name: "Diagnostics Bookings", path: "/diagnosticslist" },
+        { name: "Add Beneficiary", path: "/company/add-benificary" },
+        { name: "All Beneficiaries", path: "/company/all-benificary" },
       ],
-    },
-    {
-      icon: <i className="ri-user-heart-fill text-purple-600"></i>,
-      name: "Doctors",
-      dropdown: [
-        { name: "Add Doctor", path: "/create-doctor" },
-        { name: "Doctor List", path: "/doctorlist" },
-        { name: "Appointment List", path: "/appintmentlist" },
-        { name: "Book An Appointment", path: "/appintmentbooking" },
-      ],
-    },
-    {
-      icon: <i className="ri-notification-2-line text-purple-600"></i>,
-      name: "Requests",
-      dropdown: [
-        { name: "Doctor Accepted Request", path: "/doctoracceptedlist" },
-        { name: "Doctor Rejected Requests", path: "/doctorrejectedlist" },
-        { name: "Diagnostic Accepted Request", path: "/diagnosticsacceptedlist" },
-        { name: "Diagnostic Rejected Requests", path: "/diagnosticsrejectedlist" },
-      ],
-    },
-    {
-      icon: <i className="ri-settings-3-line text-purple-600"></i>,
-      name: "Settings",
-      path: "/setting",
     },
     {
       icon: <i className="ri-logout-box-fill text-purple-600"></i>,
@@ -80,12 +68,12 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
 
   return (
     <div
-      className={`transition-all duration-300 ${
-        isMobile ? (isCollapsed ? "w-0" : "w-64") : isCollapsed ? "w-16" : "w-64"
-      } h-screen overflow-y-scroll no-scrollbar flex flex-col bg-white`}
+      className={`text-white transition-all duration-300 ${isMobile ? (isCollapsed ? "w-0" : "w-64") : isCollapsed ? "w-16" : "w-64"
+        } overflow-y-scroll no-scrollbar h-full flex flex-col bg-white`}
     >
       <div className="sticky top-0 p-4 font-bold bg-purple-600 flex justify-center text-xl text-white">
-        <span>CredentHealth</span>
+        {/* Display the company name */}
+        <span>{companyName ? `${companyName}` : "Company Panel"}</span>
       </div>
 
       <nav className={`flex flex-col ${isCollapsed && "items-center"} space-y-4 mt-4`}>
@@ -98,13 +86,11 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
                   onClick={() => toggleDropdown(item.name)}
                 >
                   <span className="text-xl">{item.icon}</span>
-                  <span className={`ml-4 ${isCollapsed && !isMobile ? "hidden" : "block"}`}>
+                  <span className={`ml-4 ${isCollapsed && !isMobile ? "hidden" : "block"} font-bold`}>
                     {item.name}
                   </span>
                   <FaChevronDown
-                    className={`ml-auto text-xs transform ${
-                      openDropdown === item.name ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`ml-auto text-xs transform ${openDropdown === item.name ? "rotate-180" : "rotate-0"}`}
                   />
                 </div>
                 {openDropdown === item.name && (
@@ -131,7 +117,7 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
                 onClick={item.action ? item.action : null}
               >
                 <span className="text-xl">{item.icon}</span>
-                <span className={`ml-4 ${isCollapsed && !isMobile ? "hidden" : "block"}`}>
+                <span className={`ml-4 ${isCollapsed && !isMobile ? "hidden" : "block"} font-bold`}>
                   {item.name}
                 </span>
               </Link>
@@ -143,4 +129,4 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
   );
 };
 
-export default Sidebar;
+export default CompanySidebar;

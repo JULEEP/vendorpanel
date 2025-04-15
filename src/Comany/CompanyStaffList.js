@@ -3,24 +3,22 @@ import { FaFileCsv, FaEdit, FaTrash, FaUpload } from "react-icons/fa";
 import { CSVLink } from "react-csv";
 import * as XLSX from "xlsx";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
 
-const StaffList = () => {
-  const location = useLocation();
-  const companyId = new URLSearchParams(location.search).get("companyId");
+const CompanyStaffList = () => {
+  const companyId = localStorage.getItem("companyId");
 
   const [staffs, setStaffs] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [amountToAdd, setAmountToAdd] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false); // Add edit modal state
+  const [showEditModal, setShowEditModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [updatedStaff, setUpdatedStaff] = useState({});
 
   useEffect(() => {
     if (!companyId) {
-      console.error("companyId is missing");
+      console.error("Company ID not found in localStorage.");
       return;
     }
 
@@ -71,12 +69,11 @@ const StaffList = () => {
 
   const handleEdit = (staff) => {
     setSelectedStaff(staff);
-    setUpdatedStaff(staff); // Populate the form with the selected staff details
+    setUpdatedStaff(staff);
     setShowEditModal(true);
   };
 
   const handleDelete = (id) => {
-    console.log(`Delete staff with ID: ${id}`);
     setStaffs(staffs.filter((s) => s._id !== id));
   };
 
@@ -101,18 +98,18 @@ const StaffList = () => {
       alert("Please enter a valid amount.");
       return;
     }
-
+  
     setLoading(true);
-
+  
     try {
       const res = await axios.post(
         `https://credenhealth.onrender.com/api/admin/addamount/${selectedStaff._id}/${companyId}`,
         {
           amount: parseFloat(amountToAdd),
-          from: "Admin",
+          from: "Company",
         }
       );
-
+  
       if (res.status === 200) {
         // Update the wallet balance directly in the state
         const updatedStaffs = staffs.map((staff) =>
@@ -124,10 +121,11 @@ const StaffList = () => {
             : staff
         );
         setStaffs(updatedStaffs);
+  
         closeAddAmountModal();
         alert("Amount added successfully!");
       } else {
-        alert("Failed to add amount. Please try again.");
+        alert("Failed to add amount.");
       }
     } catch (error) {
       console.error("Error adding amount:", error);
@@ -136,7 +134,7 @@ const StaffList = () => {
       setLoading(false);
     }
   };
-
+  
   const handleSubmitEdit = async (e) => {
     e.preventDefault();
 
@@ -165,7 +163,7 @@ const StaffList = () => {
   return (
     <div className="p-4 bg-white rounded shadow">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Staff List</h2>
+        <h2 className="text-xl font-semibold">Company Staff List</h2>
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
@@ -180,7 +178,7 @@ const StaffList = () => {
         <CSVLink
           data={filteredStaffs}
           headers={headers}
-          filename="staff_list.csv"
+          filename="company_staff_list.csv"
           className="px-4 py-2 bg-green-500 text-white rounded text-sm flex items-center gap-2"
         >
           <FaFileCsv /> CSV
@@ -210,6 +208,9 @@ const StaffList = () => {
               <th className="p-2 border text-left">Department</th>
               <th className="p-2 border text-left">Contact</th>
               <th className="p-2 border text-left">Email</th>
+              <th className="p-2 border text-left">DOB</th>
+              <th className="p-2 border text-left">Gender</th>
+              <th className="p-2 border text-left">Age</th>
               <th className="p-2 border text-left">Address</th>
               <th className="p-2 border text-left">Profile Image</th>
               <th className="p-2 border text-left">ID Image</th>
@@ -226,48 +227,54 @@ const StaffList = () => {
                 <td className="p-2 border">{staff.department}</td>
                 <td className="p-2 border">{staff.contact}</td>
                 <td className="p-2 border">{staff.email}</td>
+                <td className="p-2 border">{staff.dob}</td>
+                <td className="p-2 border">{staff.gender}</td>
+                <td className="p-2 border">{staff.age}</td>
                 <td className="p-2 border">{staff.address}</td>
                 <td className="p-2 border">
                   {staff.profileImage ? (
                     <img
                       src={staff.profileImage}
                       alt="profile"
-                      className="h-12 w-12 object-cover rounded"
+                      className="w-10 h-10 rounded-full"
                     />
                   ) : (
-                    "No Image"
+                    "N/A"
                   )}
                 </td>
                 <td className="p-2 border">
                   {staff.idImage ? (
-                    <img
-                      src={staff.idImage}
-                      alt="ID"
-                      className="h-12 w-12 object-cover rounded"
-                    />
+                    <a
+                      href={staff.idImage}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 underline"
+                    >
+                      View
+                    </a>
                   ) : (
-                    "No ID"
+                    "N/A"
                   )}
                 </td>
-                <td className="p-2 border">₹{staff.wallet_balance}</td>
+                <td className="p-2 border">₹{staff.wallet_balance || 0}</td>
                 <td className="p-2 border">
                   <button
                     onClick={() => openAddAmountModal(staff)}
-                    className="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600"
+                    className="bg-purple-900 text-white px-2 py-1 rounded text-xs"
                   >
-                    Add Amount
+                    Add
                   </button>
                 </td>
-                <td className="p-2 border flex gap-2 justify-center">
+                <td className="p-2 border">
                   <button
                     onClick={() => handleEdit(staff)}
-                    className="text-blue-500 hover:text-blue-700"
+                    className="text-blue-500 text-lg mr-2"
                   >
                     <FaEdit />
                   </button>
                   <button
                     onClick={() => handleDelete(staff._id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 text-lg"
                   >
                     <FaTrash />
                   </button>
@@ -278,33 +285,29 @@ const StaffList = () => {
         </table>
       </div>
 
-      {/* Add Amount Modal */}
+      {/* Modal for adding amount */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-[300px]">
-            <h3 className="text-lg font-semibold mb-4">
-              Add Amount to {selectedStaff?.name}'s Wallet
-            </h3>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white p-6 rounded shadow w-80">
+            <h3 className="text-lg font-semibold mb-4">Add Amount</h3>
             <input
               type="number"
-              className="w-full border p-2 mb-4 rounded"
-              placeholder="Enter amount"
               value={amountToAdd}
               onChange={(e) => setAmountToAdd(e.target.value)}
+              placeholder="Enter amount"
+              className="w-full px-3 py-2 border rounded mb-4"
             />
             <div className="flex justify-end gap-2">
               <button
                 onClick={closeAddAmountModal}
-                className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 rounded"
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddAmount}
+                className="px-4 py-2 bg-blue-600 text-white rounded"
                 disabled={loading}
-                className={`px-3 py-1 rounded text-white ${
-                  loading ? "bg-gray-400" : "bg-green-500 hover:bg-green-600"
-                }`}
               >
                 {loading ? "Adding..." : "Add"}
               </button>
@@ -313,49 +316,37 @@ const StaffList = () => {
         </div>
       )}
 
-      {/* Edit Staff Modal */}
+      {/* Modal for editing staff */}
       {showEditModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-[300px]">
-            <h3 className="text-lg font-semibold mb-4">
-              Edit {selectedStaff?.name}'s Details
-            </h3>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white p-6 rounded shadow w-[400px]">
+            <h3 className="text-lg font-semibold mb-4">Edit Staff</h3>
             <form onSubmit={handleSubmitEdit}>
-              <input
-                type="text"
-                className="w-full border p-2 mb-4 rounded"
-                placeholder="Name"
-                value={updatedStaff.name}
-                onChange={(e) => setUpdatedStaff({ ...updatedStaff, name: e.target.value })}
-              />
-              <input
-                type="text"
-                className="w-full border p-2 mb-4 rounded"
-                placeholder="Role"
-                value={updatedStaff.role}
-                onChange={(e) => setUpdatedStaff({ ...updatedStaff, role: e.target.value })}
-              />
-              <input
-                type="text"
-                className="w-full border p-2 mb-4 rounded"
-                placeholder="Department"
-                value={updatedStaff.department}
-                onChange={(e) => setUpdatedStaff({ ...updatedStaff, department: e.target.value })}
-              />
-              {/* Add other fields as needed */}
+              {["name", "email", "contact", "role", "department", "dob", "gender", "age", "address"].map((field) => (
+                <input
+                  key={field}
+                  type="text"
+                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                  value={updatedStaff[field] || ""}
+                  onChange={(e) =>
+                    setUpdatedStaff({ ...updatedStaff, [field]: e.target.value })
+                  }
+                  className="w-full mb-2 px-3 py-2 border rounded"
+                />
+              ))}
               <div className="flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={closeEditModal}
-                  className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400"
+                  className="px-4 py-2 bg-gray-300 rounded"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  className="px-4 py-2 bg-blue-600 text-white rounded"
                 >
-                  Save Changes
+                  Save
                 </button>
               </div>
             </form>
@@ -366,4 +357,4 @@ const StaffList = () => {
   );
 };
 
-export default StaffList;
+export default CompanyStaffList;

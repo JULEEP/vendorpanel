@@ -51,6 +51,17 @@ import DoctorAppointmentListPending from "./Pages/DoctorAppointmentListPending.j
 import LoginPage from "./Pages/Login.js";
 import CategoryForm from "./Pages/CategoryForm.js";
 import CategoryList from "./Pages/CategoryList.js";
+import CompanySidebar from "./Components/CompanySidebar.js";
+import CompanyLayout from "./Layout/CompanyLayout.js";
+import CompanyDashboard from "./Comany/CompanyDashboard.js";
+import CompanyLoginPage from "./Components/CompanyLoginPage.js";
+import CompanyStaffDetailsForm from "./Comany/CompanyStaffDetailsForm.js";
+import CompanyStaffList from "./Comany/CompanyStaffList.js";
+import DiagnosticsAcceptedBooking from "./Pages/DiagnosticsAcceptedBooking.js";
+import DiagnosticsRejectedBooking from "./Pages/DiagnosticsRejectedBooking.js";
+import AcceptedAppointmentsList from "./Pages/AcceptedAppointmentsList.js";
+import RejectedAppointmentsList from "./Pages/RejectedAppointmentsList.js";
+import CompanyProfilePage from "./Comany/CompanyProfilePage.js";
 
 function App() {
   return (
@@ -104,6 +115,10 @@ function App() {
               <Route path="/staff-register" element={<StaffDetailsForm />} />
               <Route path="/stafflist" element={<StaffList />} />
               <Route path="/diagnosticslist" element={<DiagnosticsBookingList />} />
+              <Route path="/diagnosticsacceptedlist" element={<DiagnosticsAcceptedBooking />} />
+              <Route path="/diagnosticsrejectedlist" element={<DiagnosticsRejectedBooking />} />
+              <Route path="/doctoracceptedlist" element={<AcceptedAppointmentsList />} />
+              <Route path="/doctorrejectedlist" element={<RejectedAppointmentsList />} />
               <Route path="/appintmentlist" element={<DoctorAppointmentList />} />
               <Route path="/appintmentbooking" element={<AppointmentBookingForm />} />
               <Route path="/diagnostic-center/:id" element={<DiagnosticDetail />} />
@@ -111,11 +126,35 @@ function App() {
               <Route path="/doctorpendingbookings" element={<DoctorAppointmentListPending />} />
               <Route path="/categoryform" element={<CategoryForm />} />
               <Route path="/categorylist" element={<CategoryList />} />
+              <Route path="/companysidebar" element={<CompanySidebar />} />
+
 
             </Routes>
           </AdminLayout>
         }
       />
+
+        {/* Company Routes */}
+        <Route
+        path="/company/*"
+        element={
+          <CompanyLayout>
+            <Routes>
+              <Route path="companydashboard" element={<CompanyDashboard />} />
+              <Route path="add-benificary" element={<CompanyStaffDetailsForm />} />
+              <Route path="all-benificary" element={<CompanyStaffList />} />
+              <Route path="doctorlist" element={<DoctorList />} />
+              <Route path="appointments" element={<DoctorAppointmentList />} />
+              <Route path="book-appointment" element={<AppointmentBookingForm />} />
+              <Route path="profile" element={<CompanyProfilePage />} />
+              {/* Add more company routes as needed */}
+            </Routes>
+          </CompanyLayout>
+        }
+      />
+
+      {/* Standalone Company Login Route */}
+      <Route path="/company-login" element={<CompanyLoginPage />} />
     </Routes>
   );
 }

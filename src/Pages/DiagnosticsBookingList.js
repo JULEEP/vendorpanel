@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { CSVLink } from "react-csv";
 import { FaFileExcel, FaFileCsv, FaEdit, FaTrash } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -26,16 +25,39 @@ const DiagnosticsBookingList = () => {
     }
   };
 
-  const handleStatusUpdate = () => {
-    const updatedBookings = bookings.map((b) =>
-      b.bookingId === editBooking.bookingId ? { ...b, status: newStatus } : b
-    );
-    setBookings(updatedBookings);
-    setEditBooking(null);
-    setNewStatus("");
-    // Optionally: Send a PUT request to update on the backend
+  const handleStatusUpdate = async () => {
+    try {
+      const lowercaseStatus = newStatus.toLowerCase(); // Convert status to lowercase
+  
+      const res = await axios.put(
+        `https://credenhealth.onrender.com/api/admin/update/${editBooking.bookingId}`,
+        { newStatus: lowercaseStatus }
+      );
+  
+      if (res.status === 200) {
+        // Handle "accepted" status
+        if (lowercaseStatus === "accepted") {
+          // Remove the booking from the current list and update state for accepted bookings
+          const updatedBookings = bookings.filter((b) => b.bookingId !== editBooking.bookingId);
+          setBookings(updatedBookings);
+        }
+  
+        // Handle "rejected" status
+        if (lowercaseStatus === "rejected") {
+          // Remove the booking from the current list and update state for rejected bookings
+          const updatedBookings = bookings.filter((b) => b.bookingId !== editBooking.bookingId);
+          setBookings(updatedBookings);
+        }
+        // Reset edit form
+        setEditBooking(null);
+        setNewStatus("");
+      }
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    }
   };
-
+  
+  
   const handleDelete = (id) => {
     setBookings(bookings.filter((b) => b.bookingId !== id));
     // Optionally: Send DELETE request to API
@@ -94,14 +116,6 @@ const DiagnosticsBookingList = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <CSVLink
-          data={filteredBookings}
-          headers={headers}
-          filename="diagnostic_bookings.csv"
-          className="px-4 py-2 bg-green-500 text-white rounded text-sm flex items-center gap-1"
-        >
-          <FaFileCsv /> CSV
-        </CSVLink>
         <button
           onClick={exportToExcel}
           className="px-4 py-2 bg-green-500 text-white rounded text-sm flex items-center gap-1"
@@ -225,9 +239,9 @@ const DiagnosticsBookingList = () => {
                 value={newStatus}
                 onChange={(e) => setNewStatus(e.target.value)}
               >
-                <option value="Pending">Pending</option>
-                <option value="Paid">Paid</option>
-                <option value="Cancelled">Cancelled</option>
+                <option value="Rejected">Select</option>
+                <option value="Accepted">Accepted</option>
+                <option value="rejected">Rejected</option>
               </select>
             </div>
             <div className="flex justify-end gap-2">
