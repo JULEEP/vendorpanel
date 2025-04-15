@@ -62,7 +62,11 @@ import DiagnosticsRejectedBooking from "./Pages/DiagnosticsRejectedBooking.js";
 import AcceptedAppointmentsList from "./Pages/AcceptedAppointmentsList.js";
 import RejectedAppointmentsList from "./Pages/RejectedAppointmentsList.js";
 import CompanyProfilePage from "./Comany/CompanyProfilePage.js";
-
+import DoctorLayout from "./Layout/DoctorLayout.js";
+import DoctorLoginPage from "./Doctor/DoctorLoginPage.js";
+import DoctorDashboard from "./Doctor/DoctorDashboard.js";
+import DoctorProfilePage from "./Doctor/DoctorProfilePage.js";
+import SingleDoctorAppointmentList from "./Doctor/DoctorAppointmentList.js";
 function App() {
   return (
     <Routes>
@@ -153,8 +157,27 @@ function App() {
         }
       />
 
+
+            {/* Doctor Routes */}
+            <Route
+            path="/doctor/*"
+            element={
+              <DoctorLayout>
+                <Routes>
+                  <Route path="doctordashboard" element={<DoctorDashboard />} />  {/* Doctor's Dashboard */}
+                  <Route path="doctorprofile" element={<DoctorProfilePage />} />  {/* Doctor's Dashboard */}
+                  <Route path="appointments" element={<SingleDoctorAppointmentList />} />  {/* Appointments */}
+                  <Route path="book-appointment" element={<AppointmentBookingForm />} />  {/* Book Appointment */}
+                  {/* Add more doctor-specific routes */}
+                </Routes>
+              </DoctorLayout>
+            }
+          />
+    
+
       {/* Standalone Company Login Route */}
       <Route path="/company-login" element={<CompanyLoginPage />} />
+      <Route path="/doctor-login" element={<DoctorLoginPage />} />
     </Routes>
   );
 }
