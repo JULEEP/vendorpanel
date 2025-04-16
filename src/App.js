@@ -67,6 +67,11 @@ import DoctorLoginPage from "./Doctor/DoctorLoginPage.js";
 import DoctorDashboard from "./Doctor/DoctorDashboard.js";
 import DoctorProfilePage from "./Doctor/DoctorProfilePage.js";
 import SingleDoctorAppointmentList from "./Doctor/DoctorAppointmentList.js";
+import AllDiagnostics from "./Comany/AllDiagnostics.js";
+import StaffHistory from "./Pages/StaffHistory.js";
+import DiagnosticBookingForm from "./Pages/DiagnosticBookingForm.js";
+import CompanyStaffHistory from "./Components/CompanyStaffHistory.js";
+import CompanyAllDiagnostics from "./Comany/CompanyAllDiagnostics.js";
 function App() {
   return (
     <Routes>
@@ -131,6 +136,10 @@ function App() {
               <Route path="/categoryform" element={<CategoryForm />} />
               <Route path="/categorylist" element={<CategoryList />} />
               <Route path="/companysidebar" element={<CompanySidebar />} />
+              <Route path="/alldiagnostic" element={<AllDiagnostics />} />
+              <Route path="/staff-history/:staffId" element={<StaffHistory />} /> {/* Route for StaffHistory */}
+              <Route path="/book-diagnostic" element={<DiagnosticBookingForm />} />
+
 
 
             </Routes>
@@ -147,10 +156,13 @@ function App() {
               <Route path="companydashboard" element={<CompanyDashboard />} />
               <Route path="add-benificary" element={<CompanyStaffDetailsForm />} />
               <Route path="all-benificary" element={<CompanyStaffList />} />
+              <Route path="all-benificary" element={<CompanyStaffList />} />
+              <Route path="/staff-history/:staffId" element={<CompanyStaffHistory />} /> {/* Route for StaffHistory */}
               <Route path="doctorlist" element={<DoctorList />} />
               <Route path="appointments" element={<DoctorAppointmentList />} />
               <Route path="book-appointment" element={<AppointmentBookingForm />} />
               <Route path="profile" element={<CompanyProfilePage />} />
+              <Route path="alldiagnostic" element={<CompanyAllDiagnostics />} />
               {/* Add more company routes as needed */}
             </Routes>
           </CompanyLayout>

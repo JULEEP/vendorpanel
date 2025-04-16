@@ -3,8 +3,10 @@ import { FaFileCsv, FaEdit, FaTrash, FaUpload } from "react-icons/fa";
 import { CSVLink } from "react-csv";
 import * as XLSX from "xlsx";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const CompanyStaffList = () => {
+  const navigate = useNavigate()
   const companyId = localStorage.getItem("companyId");
 
   const [staffs, setStaffs] = useState([]);
@@ -15,6 +17,11 @@ const CompanyStaffList = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [updatedStaff, setUpdatedStaff] = useState({});
+
+  const handleViewHistory = (staffId) => {
+    navigate(`/company/staff-history/${staffId}`);
+  };
+  
 
   useEffect(() => {
     if (!companyId) {
@@ -48,6 +55,9 @@ const CompanyStaffList = () => {
     { label: "Address", key: "address" },
     { label: "Wallet Amount", key: "wallet_balance" },
   ];
+
+
+  
 
   const handleBulkImport = (e) => {
     const file = e.target.files[0];
@@ -160,6 +170,7 @@ const CompanyStaffList = () => {
     }
   };
 
+
   return (
     <div className="p-4 bg-white rounded shadow">
       <div className="flex justify-between items-center mb-4">
@@ -204,58 +215,29 @@ const CompanyStaffList = () => {
           <thead className="bg-gray-200">
             <tr>
               <th className="p-2 border text-left">Name</th>
-              <th className="p-2 border text-left">Role</th>
               <th className="p-2 border text-left">Department</th>
               <th className="p-2 border text-left">Contact</th>
               <th className="p-2 border text-left">Email</th>
-              <th className="p-2 border text-left">DOB</th>
               <th className="p-2 border text-left">Gender</th>
               <th className="p-2 border text-left">Age</th>
               <th className="p-2 border text-left">Address</th>
-              <th className="p-2 border text-left">Profile Image</th>
-              <th className="p-2 border text-left">ID Image</th>
               <th className="p-2 border text-left">Wallet Amount</th>
               <th className="p-2 border text-left">Add Amount</th>
               <th className="p-2 border text-left">Actions</th>
+              <th className="p-2 border text-left">History</th>
+
             </tr>
           </thead>
           <tbody>
             {filteredStaffs.map((staff) => (
               <tr key={staff._id} className="hover:bg-gray-100 border-b">
                 <td className="p-2 border">{staff.name}</td>
-                <td className="p-2 border">{staff.role}</td>
                 <td className="p-2 border">{staff.department}</td>
                 <td className="p-2 border">{staff.contact}</td>
                 <td className="p-2 border">{staff.email}</td>
-                <td className="p-2 border">{staff.dob}</td>
                 <td className="p-2 border">{staff.gender}</td>
                 <td className="p-2 border">{staff.age}</td>
                 <td className="p-2 border">{staff.address}</td>
-                <td className="p-2 border">
-                  {staff.profileImage ? (
-                    <img
-                      src={staff.profileImage}
-                      alt="profile"
-                      className="w-10 h-10 rounded-full"
-                    />
-                  ) : (
-                    "N/A"
-                  )}
-                </td>
-                <td className="p-2 border">
-                  {staff.idImage ? (
-                    <a
-                      href={staff.idImage}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 underline"
-                    >
-                      View
-                    </a>
-                  ) : (
-                    "N/A"
-                  )}
-                </td>
                 <td className="p-2 border">₹{staff.wallet_balance || 0}</td>
                 <td className="p-2 border">
                   <button
@@ -279,6 +261,15 @@ const CompanyStaffList = () => {
                     <FaTrash />
                   </button>
                 </td>
+                <td className="p-2 border">
+  <button
+    onClick={() => handleViewHistory(staff._id)}
+    className="bg-indigo-500 text-white px-2 py-1 rounded text-xs hover:bg-indigo-600"
+  >
+    View
+  </button>
+</td>
+
               </tr>
             ))}
           </tbody>

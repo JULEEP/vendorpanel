@@ -107,6 +107,11 @@ const CompanyList = () => {
     navigate(`/stafflist?companyId=${companyId}`);
   };
 
+  const handleViewDiagnostics = (companyId) => {
+    navigate(`/alldiagnostic?companyId=${companyId}`);
+  };
+
+
   const handleAddBeneficiary = (companyId) => {
     setSelectedCompanyId(companyId);
     setIsAddingBeneficiaryModalOpen(true);
@@ -184,6 +189,8 @@ const CompanyList = () => {
                 <th className="p-2 border">Actions</th>
                 <th className="p-2 border">View Staff</th>
                 <th className="p-2 border">Add Beneficiary</th>
+                <th className="p-2 border">View Diagnostics</th> {/* New column for "View" button */}
+
               </tr>
             </thead>
             <tbody>
@@ -219,6 +226,17 @@ const CompanyList = () => {
                       Add
                     </button>
                   </td>
+                  {/* New View Diagnostics column with View button */}
+                  <td className="p-2 border text-center">
+                  <button
+                    onClick={() => handleViewDiagnostics(company._id)}
+                    className="px-4 py-2 bg-blue-500 text-white rounded text-sm"
+                  >
+                    View
+                  </button>
+                </td>
+                
+                
                 </tr>
               ))}
               {currentCompanies.length === 0 && (

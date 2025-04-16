@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { RxCross1 } from "react-icons/rx";
+
 
 const CompanyDetailsForm = () => {
   const navigate = useNavigate();
@@ -20,13 +22,100 @@ const CompanyDetailsForm = () => {
   const [pincode, setPincode] = useState("");
   const [password, setPassword] = useState("");
   const [documents, setDocuments] = useState([]);
+  const [diagnostic, setDiagnostic] = useState([]);
+  
+  // const [contactPerson, setContactPerson] = useState({
+  //   name: "",
+  //   designation: "",
+  //   gender: "",
+  //   contactEmail: "",
+  //   contactNumber: "",
+  //   diagnostic: [], // Initialize as an empty array to hold multiple selections
+
+  // });
   const [contactPerson, setContactPerson] = useState({
-    name: "",
-    designation: "",
-    gender: "",
-    contactEmail: "",
-    contactNumber: "",
+    diagnostic: [],
   });
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const handleToggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
+  const handleCheckboxChange = (diagnostic) => {
+    const selected = contactPerson.diagnostic.includes(diagnostic)
+      ? contactPerson.diagnostic.filter((d) => d !== diagnostic)
+      : [...contactPerson.diagnostic, diagnostic];
+  
+    setContactPerson({ ...contactPerson, diagnostic: selected });
+  };
+  
+
+  const handleRemoveDiagnostic = (diagnosticToRemove) => {
+    const updated = contactPerson.diagnostic.filter((d) => d !== diagnosticToRemove);
+    setContactPerson({ ...contactPerson, diagnostic: updated });
+  };
+
+  const [diagnosticsList, setDiagnosticsList] = useState([]);
+const [selectedDiagnostics, setSelectedDiagnostics] = useState([]);
+
+
+// Fetch diagnostics on mount
+useEffect(() => {
+  const fetchDiagnostics = async () => {
+    try {
+      const res = await fetch("https://credenhealth.onrender.com/api/admin/alldiagnostics");
+      const data = await res.json();
+      setDiagnosticsList(data.diagnostics || []);
+    } catch (err) {
+      console.error("Error fetching diagnostics:", err);
+    }
+  };
+  fetchDiagnostics();
+}, []);
+
+// Close dropdown on outside click
+useEffect(() => {
+  const handleClickOutside = (e) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      setShowDropdown(false);
+    }
+  };
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
+const handleDiagnosticClick = (diagnosticName) => {
+  const selectedDiagnostic = diagnosticsList.find((item) => item.name === diagnosticName);
+
+  if (selectedDiagnostic && !diagnostic.includes(selectedDiagnostic._id)) {
+    setDiagnostic([...diagnostic, selectedDiagnostic._id]);
+    setSelectedDiagnostics([...selectedDiagnostics, diagnosticName]);
+  }
+};
+
+const handleRemove = (name) => {
+  const selectedDiagnostic = diagnosticsList.find((item) => item.name === name);
+  if (!selectedDiagnostic) return;
+
+  setSelectedDiagnostics(selectedDiagnostics.filter((item) => item !== name));
+  setDiagnostic(diagnostic.filter((id) => id !== selectedDiagnostic._id));
+};
+
+
+
+  // const handleDiagnosticChange = (e) => {
+  //   const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
+  //   setContactPerson({ ...contactPerson, diagnostic: selectedOptions });
+  // };
+
+  // const handleRemoveDiagnostic = (diagnosticToRemove) => {
+  //   const updatedDiagnostics = contactPerson.diagnostic.filter(
+  //     (diagnostic) => diagnostic !== diagnosticToRemove
+  //   );
+  //   setContactPerson({ ...contactPerson, diagnostic: updatedDiagnostics });
+  // };
 
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files).slice(0, 5);
@@ -53,6 +142,10 @@ const CompanyDetailsForm = () => {
     formData.append("city", city);
     formData.append("pincode", pincode);
     formData.append("password", password);
+    formData.append("diagnostic", JSON.stringify(diagnostic));
+
+
+
 
     const contactPersonData = {
       name: contactPerson.name,
@@ -86,7 +179,6 @@ const CompanyDetailsForm = () => {
       if (res.ok) {
         alert("✅ Company created successfully!");
         console.log("Created:", data);
-        navigate("/"); // Adjust route as needed
       } else {
         alert("❌ Failed: " + data.message);
       }
@@ -229,11 +321,64 @@ const CompanyDetailsForm = () => {
             </ul>
           )}
         </div>
-
-        <div className="mb-4 w-1/4">
+        <div className="flex gap-4 mb-4">
+        <div className="w-1/4">
           <label className="block text-sm mb-1">Password</label>
-          <input type="password" className="p-2 border rounded" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input
+            type="password"
+            className="p-2 border rounded w-full"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
+        <div className="w-1/4 relative" ref={dropdownRef}>
+        <label className="block text-sm mb-1">Diagnostic</label>
+      
+        {/* Trigger Dropdown */}
+        <div
+          className="p-2 border rounded bg-white cursor-pointer"
+          onClick={() => setShowDropdown(!showDropdown)}
+        >
+          --Select--
+        </div>
+      
+        {/* Dropdown Menu - opens upward */}
+        {showDropdown && (
+          <div className="absolute z-10 bg-white border rounded shadow max-h-40 overflow-y-auto w-full top-0 translate-y-[-100%]">
+            {diagnosticsList.map((item) => (
+              <div
+                key={item._id}
+                onClick={() => handleDiagnosticClick(item.name)}
+                className="px-2 py-1 hover:bg-gray-100 cursor-pointer"
+              >
+                {item.name}
+              </div>
+            ))}
+          </div>
+        )}
+      
+        {/* Selected diagnostics shown below */}
+        {selectedDiagnostics.length > 0 && (
+          <div className="mt-2">
+            <p className="font-semibold">Selected Diagnostics:</p>
+            <ul className="list-disc pl-5">
+              {selectedDiagnostics.map((name, idx) => (
+                <li key={idx} className="flex justify-between items-center">
+                  {name}
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(name)}
+                    className="text-red-500 ml-2"
+                  >
+                    <RxCross1 size={14} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>    
+</div>
 
         <div className="flex justify-end gap-2">
           <button

@@ -60,6 +60,13 @@ const CompanySidebar = ({ isCollapsed, isMobile }) => {
       ],
     },
     {
+      icon: <i className="ri-hand-heart-fill text-purple-600"></i>,
+      name: "Diagnostics",
+      dropdown: [
+        { name: "All Diagnostics", path: "/company/alldiagnostic" },
+      ],
+    },
+    {
       icon: <i className="ri-logout-box-fill text-purple-600"></i>,
       name: "Logout",
       action: handleLogout,

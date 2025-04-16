@@ -44,6 +44,8 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
         { name: "Add Diagnostics", path: "/create-diagnostic" },
         { name: "Diagnostics List", path: "/diagnosticlist" },
         { name: "Diagnostics Bookings", path: "/diagnosticslist" },
+        { name: "Book Diagnostic", path: "/book-diagnostic" },
+
       ],
     },
     {

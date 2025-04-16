@@ -3,10 +3,11 @@ import { FaFileCsv, FaEdit, FaTrash, FaUpload } from "react-icons/fa";
 import { CSVLink } from "react-csv";
 import * as XLSX from "xlsx";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const StaffList = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const companyId = new URLSearchParams(location.search).get("companyId");
 
   const [staffs, setStaffs] = useState([]);
@@ -14,7 +15,7 @@ const StaffList = () => {
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [amountToAdd, setAmountToAdd] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false); // Add edit modal state
+  const [showEditModal, setShowEditModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [updatedStaff, setUpdatedStaff] = useState({});
 
@@ -61,7 +62,6 @@ const StaffList = () => {
       const workbook = XLSX.read(data, { type: "array" });
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       const imported = XLSX.utils.sheet_to_json(worksheet);
-
       console.log("Imported Staffs:", imported);
       alert("Staff data imported successfully!");
     };
@@ -71,12 +71,11 @@ const StaffList = () => {
 
   const handleEdit = (staff) => {
     setSelectedStaff(staff);
-    setUpdatedStaff(staff); // Populate the form with the selected staff details
+    setUpdatedStaff(staff);
     setShowEditModal(true);
   };
 
   const handleDelete = (id) => {
-    console.log(`Delete staff with ID: ${id}`);
     setStaffs(staffs.filter((s) => s._id !== id));
   };
 
@@ -114,12 +113,12 @@ const StaffList = () => {
       );
 
       if (res.status === 200) {
-        // Update the wallet balance directly in the state
         const updatedStaffs = staffs.map((staff) =>
           staff._id === selectedStaff._id
             ? {
                 ...staff,
-                wallet_balance: (parseFloat(staff.wallet_balance) || 0) + parseFloat(amountToAdd),
+                wallet_balance:
+                  (parseFloat(staff.wallet_balance) || 0) + parseFloat(amountToAdd),
               }
             : staff
         );
@@ -160,6 +159,10 @@ const StaffList = () => {
       console.error("Error updating staff:", error);
       alert("Error updating staff.");
     }
+  };
+
+  const handleViewHistory = (staffId) => {
+    navigate(`/staff-history/${staffId}`);
   };
 
   return (
@@ -205,22 +208,23 @@ const StaffList = () => {
         <table className="w-full border rounded text-sm">
           <thead className="bg-gray-200">
             <tr>
-              <th className="p-2 border text-left">Name</th>
-              <th className="p-2 border text-left">Role</th>
-              <th className="p-2 border text-left">Department</th>
-              <th className="p-2 border text-left">Contact</th>
-              <th className="p-2 border text-left">Email</th>
-              <th className="p-2 border text-left">Address</th>
-              <th className="p-2 border text-left">Profile Image</th>
-              <th className="p-2 border text-left">ID Image</th>
-              <th className="p-2 border text-left">Wallet Amount</th>
-              <th className="p-2 border text-left">Add Amount</th>
-              <th className="p-2 border text-left">Actions</th>
+              <th className="p-2 border">Name</th>
+              <th className="p-2 border">Role</th>
+              <th className="p-2 border">Department</th>
+              <th className="p-2 border">Contact</th>
+              <th className="p-2 border">Email</th>
+              <th className="p-2 border">Address</th>
+              <th className="p-2 border">Profile Image</th>
+              <th className="p-2 border">ID Image</th>
+              <th className="p-2 border">Wallet Amount</th>
+              <th className="p-2 border">Add Amount</th>
+              <th className="p-2 border">Actions</th>
+              <th className="p-2 border">View History</th>
             </tr>
           </thead>
           <tbody>
             {filteredStaffs.map((staff) => (
-              <tr key={staff._id} className="hover:bg-gray-100 border-b">
+              <tr key={staff._id} className="hover:bg-gray-100">
                 <td className="p-2 border">{staff.name}</td>
                 <td className="p-2 border">{staff.role}</td>
                 <td className="p-2 border">{staff.department}</td>
@@ -272,13 +276,22 @@ const StaffList = () => {
                     <FaTrash />
                   </button>
                 </td>
+                         {/* ✅ View History Button */}
+                         <td className="p-2 border">
+                         <button
+                           onClick={() => handleViewHistory(staff._id)}
+                           className="bg-indigo-500 text-white px-2 py-1 rounded text-xs hover:bg-indigo-600"
+                         >
+                           View
+                         </button>
+                       </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Add Amount Modal */}
+      {/* Modals for Add Amount & Edit Staff (Same as before) */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded shadow-lg w-[300px]">
@@ -313,7 +326,6 @@ const StaffList = () => {
         </div>
       )}
 
-      {/* Edit Staff Modal */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded shadow-lg w-[300px]">
@@ -342,7 +354,6 @@ const StaffList = () => {
                 value={updatedStaff.department}
                 onChange={(e) => setUpdatedStaff({ ...updatedStaff, department: e.target.value })}
               />
-              {/* Add other fields as needed */}
               <div className="flex justify-end gap-2">
                 <button
                   type="button"

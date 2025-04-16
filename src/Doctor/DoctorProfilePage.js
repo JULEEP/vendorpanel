@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { FaEdit } from "react-icons/fa"; // Importing React icon for editing
 
 const DoctorProfilePage = () => {
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editingSlot, setEditingSlot] = useState(null); // Track the slot being edited
+  const [editedSchedule, setEditedSchedule] = useState({ day: '', startTime: '', endTime: '' }); // Track the edited schedule
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -26,6 +29,44 @@ const DoctorProfilePage = () => {
 
     fetchDoctor();
   }, []);
+
+  const handleEditSlot = (slot) => {
+    setEditingSlot(slot);
+    setEditedSchedule({ day: slot.day, startTime: slot.startTime, endTime: slot.endTime });
+  };
+
+  const handleSaveSlot = async () => {
+    try {
+      const doctorId = localStorage.getItem("doctorId");
+      if (!doctorId) {
+        alert("Doctor ID not found in localStorage");
+        return;
+      }
+
+      const updatedSchedule = doctor.schedule.map((slot) =>
+        slot._id === editingSlot._id ? { ...slot, ...editedSchedule } : slot
+      );
+
+      // Save to backend (you might need to adjust this to match your API endpoint)
+      await axios.put(`https://credenhealth.onrender.com/api/admin/update-schedule/${doctorId}`, {
+        schedule: updatedSchedule,
+      });
+
+      setDoctor((prevDoctor) => ({
+        ...prevDoctor,
+        schedule: updatedSchedule,
+      }));
+
+      // Reset editing state
+      setEditingSlot(null);
+    } catch (error) {
+      console.error("Error saving schedule:", error);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingSlot(null); // Cancel editing
+  };
 
   if (loading) return <div className="p-4 text-center text-gray-600">Loading doctor details...</div>;
   if (!doctor) return <div className="p-4 text-center text-red-600">Doctor not found.</div>;
@@ -62,12 +103,51 @@ const DoctorProfilePage = () => {
       {/* Schedule */}
       {doctor.schedule && doctor.schedule.length > 0 && (
         <div className="mt-8">
-          <h3 className="text-2xl font-bold text-gray-800 mb-4">Schedule</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">Schedule</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {doctor.schedule.map((slot, index) => (
               <div key={index} className="bg-white p-4 rounded shadow-sm">
-                <h4 className="text-xl font-semibold">{slot.day}</h4>
-                <p className="text-gray-700">{slot.startTime} - {slot.endTime}</p>
+                {editingSlot && editingSlot._id === slot._id ? (
+                  <div>
+                    <h4 className="text-xl font-semibold">{slot.day}</h4>
+                    <div className="mb-4">
+                      <input
+                        type="text"
+                        value={editedSchedule.day}
+                        onChange={(e) => setEditedSchedule({ ...editedSchedule, day: e.target.value })}
+                        className="p-2 border mb-2"
+                        placeholder="Day"
+                      />
+                      <input
+                        type="time"
+                        value={editedSchedule.startTime}
+                        onChange={(e) => setEditedSchedule({ ...editedSchedule, startTime: e.target.value })}
+                        className="p-2 border mb-2"
+                      />
+                      <input
+                        type="time"
+                        value={editedSchedule.endTime}
+                        onChange={(e) => setEditedSchedule({ ...editedSchedule, endTime: e.target.value })}
+                        className="p-2 border"
+                      />
+                    </div>
+                    <div className="mt-2 flex space-x-2">
+                      <button onClick={handleSaveSlot} className="px-4 py-2 bg-green-500 text-white rounded">Save</button>
+                      <button onClick={handleCancelEdit} className="px-4 py-2 bg-gray-500 text-white rounded">Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <h4 className="text-xl font-semibold">{slot.day}</h4>
+                    <p className="text-gray-700">{slot.startTime} - {slot.endTime}</p>
+                    <button
+                      onClick={() => handleEditSlot(slot)}
+                      className="mt-2 text-blue-600 text-sm"
+                    >
+                      <FaEdit />
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

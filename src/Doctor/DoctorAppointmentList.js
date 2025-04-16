@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { FaFileExcel, FaFileCsv, FaEdit, FaTrash } from "react-icons/fa";
+import { FaFileExcel, FaEdit, FaTrash } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
@@ -10,7 +10,7 @@ const SingleDoctorAppointmentList = () => {
   const [editAppointment, setEditAppointment] = useState(null);
   const [newStatus, setNewStatus] = useState("");
 
-  // Pagination state
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const appointmentsPerPage = 5;
 
@@ -23,13 +23,11 @@ const SingleDoctorAppointmentList = () => {
 
   const fetchAppointments = async (doctorId) => {
     try {
-      const res = await axios.get(`https://credenhealth.onrender.com/api/admin/alldoctorappointments/${doctorId}`);
-      console.log("API RESPONSE:", res.data);
-
+      const res = await axios.get(
+        `https://credenhealth.onrender.com/api/admin/alldoctorappointments/${doctorId}`
+      );
       if (res.data && res.data.appointments) {
         setAppointments(res.data.appointments);
-      } else {
-        console.warn("No appointments key in response:", res.data);
       }
     } catch (error) {
       console.error("Failed to fetch doctor appointments:", error);
@@ -38,21 +36,18 @@ const SingleDoctorAppointmentList = () => {
 
   const handleStatusUpdate = async () => {
     try {
-      const lowercaseStatus = newStatus.toLowerCase(); // Convert status to lowercase
-  
+      const lowercaseStatus = newStatus.toLowerCase();
+
       const res = await axios.put(
-        `http://localhost:4000/api/admin/updatestatus/${editAppointment.appointmentId}`,
+        `https://credenhealth.onrender.com/api/admin/updatestatus/${editAppointment.appointmentId}`,
         { newStatus: lowercaseStatus }
       );
-  
+
       if (res.status === 200) {
-        // ✅ Remove the updated appointment from the list
         const updatedAppointments = appointments.filter(
           (appt) => appt.appointmentId !== editAppointment.appointmentId
         );
         setAppointments(updatedAppointments);
-  
-        // Reset the form state
         setEditAppointment(null);
         setNewStatus("");
       }
@@ -63,32 +58,47 @@ const SingleDoctorAppointmentList = () => {
 
   const handleDelete = (id) => {
     setAppointments(appointments.filter((a) => a.appointmentId !== id));
-    // Optionally: Send DELETE request
+  };
+
+  const handlePrescriptionUpload = async (e, appointmentId) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("prescription", file);
+    formData.append("appointmentId", appointmentId);
+
+    try {
+      const res = await axios.post(
+        "https://credenhealth.onrender.com/api/admin/upload-prescription",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (res.status === 200) {
+        alert("Prescription uploaded successfully.");
+      }
+    } catch (err) {
+      console.error("Failed to upload prescription:", err);
+      alert("Upload failed.");
+    }
   };
 
   const filteredAppointments = appointments.filter((appt) =>
     appt.patient_name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Logic for pagination
   const indexOfLastAppointment = currentPage * appointmentsPerPage;
   const indexOfFirstAppointment = indexOfLastAppointment - appointmentsPerPage;
-  const currentAppointments = filteredAppointments.slice(indexOfFirstAppointment, indexOfLastAppointment);
+  const currentAppointments = filteredAppointments.slice(
+    indexOfFirstAppointment,
+    indexOfLastAppointment
+  );
 
-  // Total pages
   const totalPages = Math.ceil(filteredAppointments.length / appointmentsPerPage);
-
-  const headers = [
-    { label: "Appointment ID", key: "appointmentId" },
-    { label: "Doctor Name", key: "doctor_name" },
-    { label: "Specialization", key: "doctor_specialization" },
-    { label: "Patient Name", key: "patient_name" },
-    { label: "Relation", key: "patient_relation" },
-    { label: "Subtotal", key: "subtotal" },
-    { label: "Total", key: "total" },
-    { label: "Status", key: "status" },
-    { label: "Appointment Date", key: "appointment_date" }
-  ];
 
   const exportToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(filteredAppointments);
@@ -136,6 +146,7 @@ const SingleDoctorAppointmentList = () => {
               <th className="p-2 border">Status</th>
               <th className="p-2 border">Date</th>
               <th className="p-2 border">Actions</th>
+              <th className="p-2 border">Prescription</th>
             </tr>
           </thead>
           <tbody>
@@ -175,13 +186,29 @@ const SingleDoctorAppointmentList = () => {
                     <FaTrash />
                   </button>
                 </td>
+                <td className="p-2 border">
+                  <input
+                    type="file"
+                    id={`fileInput-${appt.appointmentId}`}
+                    onChange={(e) => handlePrescriptionUpload(e, appt.appointmentId)}
+                    style={{ display: "none" }}
+                  />
+                  <button
+                    onClick={() =>
+                      document.getElementById(`fileInput-${appt.appointmentId}`).click()
+                    }
+                    className="px-3 py-1 bg-indigo-500 text-white rounded text-sm"
+                  >
+                    Add
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       <div className="flex justify-between mt-4">
         <button
           onClick={() => setCurrentPage(currentPage - 1)}
@@ -190,9 +217,7 @@ const SingleDoctorAppointmentList = () => {
         >
           Previous
         </button>
-        <div className="flex items-center justify-center">
-          <span>Page {currentPage} of {totalPages}</span>
-        </div>
+        <span className="flex items-center">Page {currentPage} of {totalPages}</span>
         <button
           onClick={() => setCurrentPage(currentPage + 1)}
           className="px-4 py-2 bg-gray-300 text-gray-700 rounded"
@@ -212,7 +237,7 @@ const SingleDoctorAppointmentList = () => {
               value={newStatus}
               onChange={(e) => setNewStatus(e.target.value)}
             >
-              <option value="rejected">Select</option>
+              <option value="">Select</option>
               <option value="accepted">Accepted</option>
               <option value="rejected">Rejected</option>
             </select>

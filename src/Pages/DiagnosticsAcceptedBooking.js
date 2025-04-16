@@ -8,6 +8,9 @@ import axios from "axios";
 const DiagnosticsAcceptedBooking = () => {
   const [bookings, setBookings] = useState([]);
   const [search, setSearch] = useState("");
+  const [showModal, setShowModal] = useState(false); // For controlling modal visibility
+  const [selectedBooking, setSelectedBooking] = useState(null); // For tracking the selected booking for prescription upload
+  const [prescriptionFile, setPrescriptionFile] = useState(null); // For storing the file to upload
 
   useEffect(() => {
     fetchAcceptedBookings();
@@ -54,6 +57,65 @@ const DiagnosticsAcceptedBooking = () => {
     saveAs(blob, "diagnostic_accepted_bookings.xlsx");
   };
 
+  const handleFileChange = (e) => {
+    setPrescriptionFile(e.target.files[0]); // Set the selected file
+  };
+
+  const handleFileUpload = async () => {
+    if (!prescriptionFile || !selectedBooking) return; // If no file or booking selected, return
+
+    const formData = new FormData();
+    formData.append("prescription", prescriptionFile);
+    formData.append("bookingId", selectedBooking.bookingId); // Attach bookingId for backend identification
+
+    try {
+      await axios.post("https://credenhealth.onrender.com/api/admin/upload-prescription", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      alert("Prescription uploaded successfully!");
+      setShowModal(false); // Close modal after successful upload
+    } catch (error) {
+      console.error("Error uploading prescription:", error);
+      alert("Failed to upload prescription.");
+    }
+  };
+
+  const renderModal = () => {
+    if (!showModal || !selectedBooking) return null;
+
+    return (
+      <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50">
+        <div className="bg-white p-6 rounded shadow-md w-96">
+          <h3 className="text-lg font-semibold mb-4">Upload Prescription for {selectedBooking.patient_name}</h3>
+          <div className="mb-4">
+            <input
+              type="file"
+              accept="application/pdf,image/*"
+              onChange={handleFileChange}
+              className="border p-2 w-full"
+            />
+          </div>
+          <div className="flex justify-end">
+            <button
+              onClick={handleFileUpload}
+              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+            >
+              Upload
+            </button>
+            <button
+              onClick={() => setShowModal(false)}
+              className="ml-2 px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="p-4 bg-white rounded shadow">
       <div className="flex justify-between items-center mb-4">
@@ -68,14 +130,12 @@ const DiagnosticsAcceptedBooking = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <CSVLink
-          data={filteredBookings}
-          headers={headers}
-          filename="diagnostic_accepted_bookings.csv"
-          className="px-4 py-2 bg-green-500 text-white rounded text-sm flex items-center gap-1"
+        <button
+          onClick={exportToExcel}
+          className="px-4 py-2 bg-purple-900 text-white rounded-md hover:bg-purple-600"
         >
-          <FaFileCsv /> CSV
-        </CSVLink>
+          <FaFileExcel />
+        </button>
       </div>
 
       <div className="overflow-x-auto">
@@ -95,6 +155,7 @@ const DiagnosticsAcceptedBooking = () => {
               <th className="p-2 border">Total</th>
               <th className="p-2 border">Status</th>
               <th className="p-2 border">Date</th>
+              <th className="p-2 border">Add Prescription</th> {/* New column for Prescription Upload */}
             </tr>
           </thead>
           <tbody>
@@ -121,11 +182,25 @@ const DiagnosticsAcceptedBooking = () => {
                 <td className="p-2 border">
                   {new Date(booking.appointment_date).toLocaleDateString()}
                 </td>
+                <td className="p-2 border">
+                  <button
+                    onClick={() => {
+                      setSelectedBooking(booking); // Set selected booking
+                      setShowModal(true); // Show modal
+                    }}
+                    className="px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-900"
+                  >
+                    Add
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Render the Modal */}
+      {renderModal()}
     </div>
   );
 };

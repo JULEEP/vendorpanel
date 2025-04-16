@@ -14,39 +14,52 @@ const AppointmentBookingForm = () => {
   const [appointmentTime, setAppointmentTime] = useState("");
   const [patientName, setPatientName] = useState("");
   const [patientRelation, setPatientRelation] = useState("");
+  const [doctorSchedule, setDoctorSchedule] = useState(null);
+  const [submittedData, setSubmittedData] = useState(null);  // To hold the response data for display
 
-  // Fetch staff and doctor lists on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const staffResponse = await axios.get("/api/staff");
-        setStaffList(staffResponse.data);
-        const doctorResponse = await axios.get("/api/doctors");
+        const doctorResponse = await axios.get("https://credenhealth.onrender.com/api/admin/getdoctors");
         setDoctorList(doctorResponse.data);
       } catch (error) {
-        console.error("Error fetching staff or doctor data:", error);
+        console.error("Error fetching doctors:", error);
       }
     };
     fetchData();
   }, []);
+
+  // Handle doctor selection
+  const handleDoctorChange = (e) => {
+    const doctorId = e.target.value;
+    setSelectedDoctor(doctorId);
+
+    // Find the selected doctor's schedule
+    const doctor = doctorList.find((doc) => doc._id === doctorId);
+    if (doctor) {
+      setDoctorSchedule(doctor.schedule);
+    }
+  };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const appointmentData = {
-      staffId: selectedStaff,
+      staffId: '',  // leave this empty
+      name: selectedStaff,  // send staff name from the input
       doctorId: selectedDoctor,
       appointment_date: appointmentDate,
       appointment_time: appointmentTime,
       patient_name: patientName,
       patient_relation: patientRelation,
     };
+    
 
     try {
-      const response = await axios.post("/api/appointments", appointmentData);
+      const response = await axios.post("https://credenhealth.onrender.com/api/staff/bookappoint", appointmentData);
       alert(response.data.message);
-      navigate("/appointments"); // Redirect to appointments page
+      setSubmittedData(response.data.appointment);  // Save response data to show confirmation
     } catch (error) {
       console.error("Error booking appointment:", error);
       alert("Appointment booking failed.");
@@ -57,94 +70,126 @@ const AppointmentBookingForm = () => {
     <div className="p-6 bg-white rounded shadow">
       <h3 className="text-lg font-bold mb-4">Book Appointment</h3>
       <form onSubmit={handleSubmit}>
-        <div className="flex gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {/* Staff Name Input */}
-          <div className="w-1/4">
-            <label className="block text-sm mb-1">Staff Name</label>
+          <div className="w-full">
+            <label className="block text-sm font-medium mb-1">Staff Name</label>
             <input
               type="text"
-              className="p-2 border rounded w-full"
+              className="p-3 border rounded w-full"
               value={selectedStaff}
               onChange={(e) => setSelectedStaff(e.target.value)}
               placeholder="Enter staff name"
             />
           </div>
 
-          {/* Doctor Name Input */}
-          <div className="w-1/4">
-            <label className="block text-sm mb-1">Doctor Name</label>
-            <input
-              type="text"
-              className="p-2 border rounded w-full"
+          {/* Doctor Dropdown */}
+          <div className="w-full">
+            <label className="block text-sm font-medium mb-1">Select Doctor</label>
+            <select
+              className="p-3 border rounded w-full"
               value={selectedDoctor}
-              onChange={(e) => setSelectedDoctor(e.target.value)}
-              placeholder="Enter doctor name"
-            />
+              onChange={handleDoctorChange}
+            >
+              <option value="">Select Doctor</option>
+              {doctorList.map((doctor) => (
+                <option key={doctor._id} value={doctor._id}>
+                  {doctor.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
-        <div className="flex gap-4 mb-4">
+        {/* Display Doctor Schedule */}
+        {doctorSchedule && (
+          <div className="mb-6">
+            <h4 className="text-sm font-semibold mb-2">Doctor's Schedule</h4>
+            <ul className="list-disc pl-5">
+              {doctorSchedule.map((slot) => (
+                <li key={slot._id} className="text-sm">
+                  {slot.day}: {slot.startTime} - {slot.endTime}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
           {/* Appointment Date Input */}
-          <div className="w-1/4">
-            <label className="block text-sm mb-1">Appointment Date</label>
+          <div className="w-full">
+            <label className="block text-sm font-medium mb-1">Appointment Date</label>
             <input
               type="date"
-              className="p-2 border rounded w-full"
+              className="p-3 border rounded w-full"
               value={appointmentDate}
               onChange={(e) => setAppointmentDate(e.target.value)}
             />
           </div>
 
           {/* Appointment Time Input */}
-          <div className="w-1/4">
-            <label className="block text-sm mb-1">Appointment Time</label>
+          <div className="w-full">
+            <label className="block text-sm font-medium mb-1">Appointment Time</label>
             <input
               type="time"
-              className="p-2 border rounded w-full"
+              className="p-3 border rounded w-full"
               value={appointmentTime}
               onChange={(e) => setAppointmentTime(e.target.value)}
             />
           </div>
 
           {/* Patient Name Input */}
-          <div className="w-1/4">
-            <label className="block text-sm mb-1">Patient Name</label>
+          <div className="w-full">
+            <label className="block text-sm font-medium mb-1">Patient Name</label>
             <input
               type="text"
-              className="p-2 border rounded w-full"
+              className="p-3 border rounded w-full"
               value={patientName}
               onChange={(e) => setPatientName(e.target.value)}
             />
           </div>
 
           {/* Patient Relation Input */}
-          <div className="w-1/4">
-            <label className="block text-sm mb-1">Patient Relation</label>
+          <div className="w-full">
+            <label className="block text-sm font-medium mb-1">Patient Relation</label>
             <input
               type="text"
-              className="p-2 border rounded w-full"
+              className="p-3 border rounded w-full"
               value={patientRelation}
               onChange={(e) => setPatientRelation(e.target.value)}
             />
           </div>
         </div>
 
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-4">
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="px-4 py-2 text-red-700 bg-red-100 border border-red-600 rounded"
+            className="px-6 py-3 text-red-700 bg-red-100 border border-red-600 rounded"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 text-blue-700 bg-blue-100 border border-blue-600 rounded"
+            className="px-6 py-3 text-blue-700 bg-blue-100 border border-blue-600 rounded"
           >
             Submit
           </button>
         </div>
       </form>
+
+      {/* Show Confirmation of Appointment */}
+      {submittedData && (
+        <div className="mt-6 p-4 border border-green-400 bg-green-50 rounded">
+          <h4 className="text-lg font-bold">Appointment Booked Successfully</h4>
+          <p><strong>Doctor:</strong> {submittedData.doctor_name}</p>
+          <p><strong>Patient:</strong> {submittedData.patient_name} ({submittedData.patient_relation})</p>
+          <p><strong>Appointment Date:</strong> {new Date(submittedData.appointment_date).toLocaleString()}</p>
+          <p><strong>Status:</strong> {submittedData.status}</p>
+          <p><strong>Subtotal:</strong> ${submittedData.subtotal}</p>
+          <p><strong>Total:</strong> ${submittedData.total}</p>
+        </div>
+      )}
     </div>
   );
 };
