@@ -72,6 +72,19 @@ import StaffHistory from "./Pages/StaffHistory.js";
 import DiagnosticBookingForm from "./Pages/DiagnosticBookingForm.js";
 import CompanyStaffHistory from "./Components/CompanyStaffHistory.js";
 import CompanyAllDiagnostics from "./Comany/CompanyAllDiagnostics.js";
+import DiagnosticLayout from "./Layout/DiagnosticLayout.js";
+import DiagnosticLoginPage from "./Diagnostic/DiagnosticLoginPage.js";
+import DiagnosticDashboard from "./Diagnostic/DiagnosticDashboard.js";
+import SingleDiagnosticDetail from "./Diagnostic/SingleDiagnosticDetail.js";
+import SingleDiagnosticBookings from "./Diagnostic/SingleDiagnosticBookings.js";
+import CouponsPage from "./Pages/CouponPage.js";
+import CreateCoupon from "./Pages/CreateCoupon.js";
+import UploadDocuments from "./Pages/UploadDocuments.js";
+import DocumentTable from "./Pages/DocumentTable.js";
+
+
+
+
 function App() {
   return (
     <Routes>
@@ -139,6 +152,11 @@ function App() {
               <Route path="/alldiagnostic" element={<AllDiagnostics />} />
               <Route path="/staff-history/:staffId" element={<StaffHistory />} /> {/* Route for StaffHistory */}
               <Route path="/book-diagnostic" element={<DiagnosticBookingForm />} />
+              <Route path="/coupons" element={<CouponsPage />} />
+              <Route path="/create-coupon" element={<CreateCoupon />} />
+              <Route path="/upload-docs" element={<UploadDocuments />} />
+              <Route path="/docs" element={<DocumentTable />} />
+
 
 
 
@@ -147,8 +165,8 @@ function App() {
         }
       />
 
-        {/* Company Routes */}
-        <Route
+      {/* Company Routes */}
+      <Route
         path="/company/*"
         element={
           <CompanyLayout>
@@ -170,26 +188,43 @@ function App() {
       />
 
 
-            {/* Doctor Routes */}
-            <Route
-            path="/doctor/*"
-            element={
-              <DoctorLayout>
-                <Routes>
-                  <Route path="doctordashboard" element={<DoctorDashboard />} />  {/* Doctor's Dashboard */}
-                  <Route path="doctorprofile" element={<DoctorProfilePage />} />  {/* Doctor's Dashboard */}
-                  <Route path="appointments" element={<SingleDoctorAppointmentList />} />  {/* Appointments */}
-                  <Route path="book-appointment" element={<AppointmentBookingForm />} />  {/* Book Appointment */}
-                  {/* Add more doctor-specific routes */}
-                </Routes>
-              </DoctorLayout>
-            }
-          />
-    
+      {/* Doctor Routes */}
+      <Route
+        path="/doctor/*"
+        element={
+          <DoctorLayout>
+            <Routes>
+              <Route path="doctordashboard" element={<DoctorDashboard />} />  {/* Doctor's Dashboard */}
+              <Route path="doctorprofile" element={<DoctorProfilePage />} />  {/* Doctor's Dashboard */}
+              <Route path="appointments" element={<SingleDoctorAppointmentList />} />  {/* Appointments */}
+              <Route path="book-appointment" element={<AppointmentBookingForm />} />  {/* Book Appointment */}
+              {/* Add more doctor-specific routes */}
+            </Routes>
+          </DoctorLayout>
+        }
+      />
+
+
+      <Route
+        path="/diagnostic/*"
+        element={
+          <DiagnosticLayout>
+            <Routes>
+              <Route path="all-bookings" element={<DiagnostiCreate />} />
+              <Route path="dashboard" element={<DiagnosticDashboard />} />
+              <Route path="mydiagnostic" element={<SingleDiagnosticDetail />} />
+              <Route path="mybookings" element={<SingleDiagnosticBookings />} />
+              {/* Add more diagnostic-specific routes here */}
+            </Routes>
+          </DiagnosticLayout>
+        }
+      />
+
 
       {/* Standalone Company Login Route */}
       <Route path="/company-login" element={<CompanyLoginPage />} />
       <Route path="/doctor-login" element={<DoctorLoginPage />} />
+      <Route path="/diagnostic-login" element={<DiagnosticLoginPage />} />
     </Routes>
   );
 }

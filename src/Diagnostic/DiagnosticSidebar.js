@@ -1,10 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-const Sidebar = ({ isCollapsed, isMobile }) => {
+const DiagnosticSidebar = ({ isCollapsed, isMobile }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [diagnosticName, setDiagnosticName] = useState(""); // State to store diagnostic name
+
+  // Fetch diagnostic name from localStorage
+  useEffect(() => {
+    const storedDiagnosticName = localStorage.getItem("diagnosticName");
+    if (storedDiagnosticName) {
+      setDiagnosticName(storedDiagnosticName);
+    }
+  }, []);
 
   const toggleDropdown = (name) => {
     setOpenDropdown(openDropdown === name ? null : name);
@@ -12,11 +21,14 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("https://credenhealth.onrender.com/api/admin/logout", {}, { withCredentials: true });
+      await axios.post("https://credenhealth.onrender.com/api/diagnostic/logout-diagnostic", {}, { withCredentials: true });
 
       localStorage.removeItem("authToken");
+      localStorage.removeItem("diagnosticId");
+      localStorage.removeItem("diagnosticName");
+
       alert("Logout successful");
-      window.location.href = "/";
+      window.location.href = "/diagnostic-login";
     } catch (error) {
       console.error("Logout error:", error);
       alert("Logout failed. Please try again.");
@@ -25,28 +37,26 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
 
   const elements = [
     {
-      icon: <i className="ri-home-fill text-white"></i>,
-      name: "Home",
-      path: "/dashboard",
+      icon: <i className="ri-home-2-fill text-purple-600"></i>,
+      name: "Dashboard",
+      path: "/diagnostic/dashboard",
     },
     {
-      icon: <i className="ri-building-fill text-white"></i>,
-      name: "Coupons",
+      icon: <i className="ri-profile-fill text-purple-600"></i>,
+      name: "Profile",
       dropdown: [
-        { name: "Add Coupon", path: "/create-coupon" },
-        { name: "All Coupons", path: "/coupons" },
+        { name: "View Profile", path: "/diagnostic/mydiagnostic" },
       ],
     },
     {
-      icon: <i className="ri-file-search-fill text-white"></i>,
-      name: "Documents",
+      icon: <i className="ri-calendar-check-fill text-purple-600"></i>,
+      name: "Booking",
       dropdown: [
-        { name: "Upload Documents", path: "/upload-docs" },
-        { name: "Documents List", path: "/docs" },
+        { name: "All Bookings", path: "/diagnostic/mybookings" },
       ],
     },
     {
-      icon: <i className="ri-logout-box-fill text-white"></i>,
+      icon: <i className="ri-logout-box-fill text-purple-600"></i>,
       name: "Logout",
       action: handleLogout,
     },
@@ -54,15 +64,12 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
 
   return (
     <div
-      className={`transition-all duration-300 ${isMobile ? (isCollapsed ? "w-0" : "w-64") : isCollapsed ? "w-16" : "w-64"} h-screen overflow-y-scroll no-scrollbar flex flex-col bg-black`}
+      className={`text-white transition-all duration-300 ${isMobile ? (isCollapsed ? "w-0" : "w-64") : isCollapsed ? "w-16" : "w-64"
+        } overflow-y-scroll no-scrollbar h-full flex flex-col bg-white`}
     >
-    <div className="sticky top-0 p-4 font-bold bg-black text-white flex justify-center text-xl">
-    <span>Vendor Dashboard</span>
-  </div>
-  
-  {/* Divider with thicker and darker color */}
-  <div className="border-b-4 border-gray-800 my-2"></div>
-  
+      <div className="sticky top-0 p-4 font-bold bg-purple-600 flex justify-center text-xl text-white">
+        <span>{diagnosticName ? `${diagnosticName}` : "Diagnostic Panel"}</span>
+      </div>
 
       <nav className={`flex flex-col ${isCollapsed && "items-center"} space-y-4 mt-4`}>
         {elements.map((item, idx) => (
@@ -70,11 +77,11 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
             {item.dropdown ? (
               <>
                 <div
-                  className="flex items-center py-3 px-4 font-bold text-sm text-white mx-4 rounded-lg hover:bg-[#333333] hover:text-[#00B074] duration-300 cursor-pointer"
+                  className="flex items-center py-3 px-4 font-bold text-sm text-[#464255] mx-4 rounded-lg hover:bg-[#D9F3EA] hover:text-[#00B074] duration-300 cursor-pointer"
                   onClick={() => toggleDropdown(item.name)}
                 >
                   <span className="text-xl">{item.icon}</span>
-                  <span className={`ml-4 ${isCollapsed && !isMobile ? "hidden" : "block"}`}>
+                  <span className={`ml-4 ${isCollapsed && !isMobile ? "hidden" : "block"} font-bold`}>
                     {item.name}
                   </span>
                   <FaChevronDown
@@ -82,7 +89,7 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
                   />
                 </div>
                 {openDropdown === item.name && (
-                  <ul className="ml-10 text-sm text-white">
+                  <ul className="ml-10 text-sm text-[#464255]">
                     {item.dropdown.map((subItem, subIdx) => (
                       <li key={subIdx}>
                         <Link
@@ -101,11 +108,11 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
             ) : (
               <Link
                 to={item.path}
-                className="flex items-center py-3 px-4 font-bold text-sm text-white mx-4 rounded-lg hover:bg-[#333333] hover:text-[#00B074] duration-300 cursor-pointer"
+                className="flex items-center py-3 px-4 font-bold text-sm text-[#464255] mx-4 rounded-lg hover:bg-[#D9F3EA] hover:text-[#00B074] duration-300 cursor-pointer"
                 onClick={item.action ? item.action : null}
               >
                 <span className="text-xl">{item.icon}</span>
-                <span className={`ml-4 ${isCollapsed && !isMobile ? "hidden" : "block"}`}>
+                <span className={`ml-4 ${isCollapsed && !isMobile ? "hidden" : "block"} font-bold`}>
                   {item.name}
                 </span>
               </Link>
@@ -117,4 +124,4 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
   );
 };
 
-export default Sidebar;
+export default DiagnosticSidebar;

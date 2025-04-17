@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const LoginPage = () => {
+const DiagnosticLoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
 
-    // Simple validation
     if (!email || !password) {
       setError('Email and password are required.');
       return;
@@ -21,36 +22,40 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://credenhealth.onrender.com/api/admin/login', {
+      const response = await fetch('http://localhost:4000/api/admin/login-diagnostic', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }), // Using the provided credentials
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Login Success
-        console.log('Login successful:', data);
-
-        // Save token and admin id to localStorage
+        // Save token and diagnostic info
         if (data.token) {
-          localStorage.setItem('authToken', data.token); // Save token
-        }
-        if (data.admin && data.admin.id) {
-          localStorage.setItem('adminId', data.admin.id); // Save admin id
+          localStorage.setItem('authToken', data.token);
+          console.log('Token saved:', data.token);
         }
 
-        // Redirecting to the dashboard
-        navigate('/dashboard');
+        if (data.diagnostic?.id) {
+          localStorage.setItem('diagnosticId', data.diagnostic.id);
+          console.log('Diagnostic ID saved:', data.diagnostic.id);
+        }
+
+        if (data.diagnostic?.name) {
+          localStorage.setItem('diagnosticName', data.diagnostic.name);
+          console.log('Diagnostic Name saved:', data.diagnostic.name);
+        }
+
+        setSuccessMessage('Login successful!');
+        navigate('/diagnostic/dashboard'); // Update to your actual route
       } else {
-        // Handle API errors
         setError(data.message || 'Login failed. Please try again.');
       }
     } catch (err) {
-      // Handle network errors
+      console.error('Login error:', err);
       setError('Something went wrong. Please try again later.');
     } finally {
       setIsLoading(false);
@@ -62,40 +67,29 @@ const LoginPage = () => {
       <div className="flex flex-col md:flex-row items-center bg-white rounded-lg shadow-2xl overflow-hidden max-w-4xl w-full">
         {/* Form Section */}
         <div className="w-full md:w-1/2 p-8 space-y-6">
-          <h2 className="text-3xl font-bold text-center text-gray-800">Vendor Login</h2>
+          <h2 className="text-3xl font-bold text-center text-gray-800">Diagnostic Login</h2>
           {error && (
-            <div className="p-3 text-red-600 bg-red-100 rounded-md shadow-sm">
-              {error}
-            </div>
+            <div className="p-3 text-red-600 bg-red-100 rounded-md shadow-sm">{error}</div>
+          )}
+          {successMessage && (
+            <div className="p-3 text-green-600 bg-green-100 rounded-md shadow-sm">{successMessage}</div>
           )}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label
-                className="block text-sm font-medium text-gray-700"
-                htmlFor="email"
-              >
-                Email Address
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Email Address</label>
               <input
                 type="email"
-                id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="block w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-teal-500 focus:border-teal-600 transition duration-200"
-                placeholder="you@domain.com"
+                placeholder="diagnostic@example.com"
               />
             </div>
             <div>
-              <label
-                className="block text-sm font-medium text-gray-700"
-                htmlFor="password"
-              >
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Password</label>
               <input
                 type="password"
-                id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -105,9 +99,7 @@ const LoginPage = () => {
             </div>
             <button
               type="submit"
-              className={`w-full p-3 text-white bg-teal-600 rounded-md hover:bg-teal-700 transition duration-200 transform ${
-                isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'
-              }`}
+              className={`w-full p-3 text-white bg-teal-600 rounded-md hover:bg-teal-700 transition duration-200 transform ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
               disabled={isLoading}
             >
               {isLoading ? 'Logging in...' : 'Login'}
@@ -118,8 +110,8 @@ const LoginPage = () => {
         {/* Image Section */}
         <div className="w-full md:w-1/2 flex justify-center p-4 md:p-0">
           <img
-            src="https://static.vecteezy.com/system/resources/previews/026/575/406/large_2x/a-set-of-colorful-shopping-bags-with-handles-paper-shopping-bags-close-up-shopping-days-concept-by-ai-generated-free-photo.jpg"
-            alt="Staff Login Illustration"
+            src="https://static.vecteezy.com/system/resources/previews/021/875/011/original/mri-or-magnetic-resonance-imaging-illustration-with-doctor-and-patient-on-medical-examination-and-ct-scan-in-flat-cartoon-hand-drawn-templates-vector.jpg"
+            alt="Diagnostic Login Illustration"
             className="object-cover w-full h-auto rounded-lg md:rounded-none"
           />
         </div>
@@ -128,4 +120,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default DiagnosticLoginPage;

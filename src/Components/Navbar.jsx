@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MdCleaningServices } from "react-icons/md";
+import { MdShoppingCart } from "react-icons/md"; // Vendor related icon (could be for products/orders)
 import { RiMenu2Line, RiMenu3Line, RiFullscreenLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import axios from "axios"; // Make sure axios is installed (npm install axios)
@@ -7,17 +7,17 @@ import axios from "axios"; // Make sure axios is installed (npm install axios)
 const Navbar = ({ setIsCollapsed, isCollapsed }) => {
   const navigate = useNavigate();
 
-  // State to store real counts
-  const [diagnosticRequests, setDiagnosticRequests] = useState(0);
-  const [doctorRequests, setDoctorRequests] = useState(0);
+  // State to store counts
+  const [productRequests, setProductRequests] = useState(0);
+  const [orderRequests, setOrderRequests] = useState(0);
 
   // Fetch counts from API on component mount
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const response = await axios.get("https://credenhealth.onrender.com/api/admin/getcount");
-        setDiagnosticRequests(response.data.totalDiagnosticBookings || 0);
-        setDoctorRequests(response.data.totalDoctorAppointments || 0);
+        const response = await axios.get("https://your-api-endpoint.com/api/vendor/getcount");
+        setProductRequests(response.data.totalProductRequests || 0);
+        setOrderRequests(response.data.totalOrderRequests || 0);
       } catch (error) {
         console.error("Error fetching counts:", error);
       }
@@ -26,12 +26,12 @@ const Navbar = ({ setIsCollapsed, isCollapsed }) => {
     fetchCounts();
   }, []);
 
-  const handleClick = () => {
-    navigate("/diagnosticslist");
+  const handleProductClick = () => {
+    navigate("/vendor/productlist");
   };
 
-  const handleNavigation = () => {
-    navigate("/appintmentlist");
+  const handleOrderClick = () => {
+    navigate("/vendor/orderlist");
   };
 
   return (
@@ -46,33 +46,6 @@ const Navbar = ({ setIsCollapsed, isCollapsed }) => {
 
       <div className="flex justify-between items-center w-full">
         <div className="flex gap-3 ml-4">
-          <button className="font-semibold flex gap-2 bg-[#F8FAF8] items-center justify-center p-3 rounded-md text-[#188753] hover:bg-[#D9F3EA] duration-300">
-            <MdCleaningServices /> Cache Clear
-          </button>
-
-          <button
-            className="relative font-semibold bg-[#F8FAF8] text-[#188753] p-3 rounded-md hover:bg-[#D9F3EA] duration-300"
-            onClick={handleClick}
-          >
-            Request for Diagnostic
-            {diagnosticRequests > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                {diagnosticRequests}
-              </span>
-            )}
-          </button>
-
-          <button
-            onClick={handleNavigation}
-            className="relative font-semibold bg-[#F8FAF8] text-[#188753] p-3 rounded-md hover:bg-[#D9F3EA] duration-300"
-          >
-            Request for Doctor Consultation
-            {doctorRequests > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                {doctorRequests}
-              </span>
-            )}
-          </button>
         </div>
 
         <div className="flex gap-3 items-center">
@@ -81,12 +54,13 @@ const Navbar = ({ setIsCollapsed, isCollapsed }) => {
           </button>
 
           <div className="flex flex-col justify-center items-center">
+            {/* Replaced the company logo with the new vendor image */}
             <img
-              className="rounded-full w-[2vw]"
-              src="/CompanyLogo.png"
-              alt="Company Logo"
+              className="rounded-full w-[3vw]"
+              src="https://static.vecteezy.com/system/resources/previews/026/575/406/large_2x/a-set-of-colorful-shopping-bags-with-handles-paper-shopping-bags-close-up-shopping-days-concept-by-ai-generated-free-photo.jpg"
+              alt="Vendor Logo"
             />
-            <h1 className="text-xs">Admin</h1>
+            <h1 className="text-xs">Vendor</h1>
           </div>
         </div>
       </div>

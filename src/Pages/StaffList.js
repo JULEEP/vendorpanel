@@ -52,22 +52,41 @@ const StaffList = () => {
     { label: "Wallet Amount", key: "wallet_balance" },
   ];
 
-  const handleBulkImport = (e) => {
+  const handleBulkImport = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+  
+    // Prepare the file for upload
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      // Send the file to the server
+      const response = await fetch(`http://localhost:4000/api/admin/import-staffs`, {
+        method: "POST",
+        body: formData,
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        alert("Staff data imported successfully!");
+        console.log("Imported Staffs:", result.data);
+        
+        // Assuming the imported data is an array of staff
+        setStaffs((prevStaffs) => [...prevStaffs, ...result.data]); // Add newly imported staff to state
+        
+        // Optional: You can also refresh the staff list or perform other updates here
+      } else {
+        alert("Error importing data: " + result.error);
+        console.error("Error importing data:", result.error);
+      }
+    } catch (error) {
+      console.error("Error during file upload:", error);
+      alert("Failed to upload file.");
+    }
+};
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const data = new Uint8Array(event.target.result);
-      const workbook = XLSX.read(data, { type: "array" });
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const imported = XLSX.utils.sheet_to_json(worksheet);
-      console.log("Imported Staffs:", imported);
-      alert("Staff data imported successfully!");
-    };
-
-    reader.readAsArrayBuffer(file);
-  };
 
   const handleEdit = (staff) => {
     setSelectedStaff(staff);

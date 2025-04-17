@@ -62,21 +62,6 @@ const CompanyList = () => {
     { label: "Strength", key: "companyStrength" },
   ];
 
-  const handleBulkImport = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const parsedData = XLSX.utils.sheet_to_json(worksheet);
-        console.log("Imported Data:", parsedData);
-        alert("Data imported successfully!");
-      };
-      reader.readAsArrayBuffer(file);
-    }
-  };
 
   const handleEdit = (id) => {
     const company = companies.find(c => c._id === id);
@@ -86,6 +71,39 @@ const CompanyList = () => {
       setIsEditingCompanyModalOpen(true);
     }
   };
+
+
+  const handleBulkImport = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Prepare the file for upload
+      const formData = new FormData();
+      formData.append("file", file);
+  
+      try {
+        // Send the file to the server
+        const response = await fetch("http://localhost:4000/api/admin/import-companies", {
+          method: "POST",
+          body: formData,
+        });
+  
+        const result = await response.json();
+  
+        if (response.ok) {
+          alert("Data imported successfully!");
+          console.log("Imported companies:", result.data);
+          setCompanies((prevCompanies) => [...prevCompanies, ...result.data]); // Add newly imported companies to state
+        } else {
+          alert("Error importing data: " + result.error);
+          console.error("Error importing data:", result.error);
+        }
+      } catch (error) {
+        console.error("Error during file upload:", error);
+        alert("Failed to upload file.");
+      }
+    }
+  };
+  
 
   const handleDelete = (id) => {
     setCompanies(companies.filter(company => company._id !== id));
