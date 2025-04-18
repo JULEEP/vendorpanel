@@ -35,6 +35,7 @@ const Sidebar = ({ isCollapsed, isMobile }) => {
       dropdown: [
         { name: "Add Coupon", path: "/create-coupon" },
         { name: "All Coupons", path: "/coupons" },
+        { name: "Coupons History", path: "/couponshistory" },
       ],
     },
     {

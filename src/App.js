@@ -81,6 +81,7 @@ import CouponsPage from "./Pages/CouponPage.js";
 import CreateCoupon from "./Pages/CreateCoupon.js";
 import UploadDocuments from "./Pages/UploadDocuments.js";
 import DocumentTable from "./Pages/DocumentTable.js";
+import CouponHistoryTable from "./Pages/CouponHistoryTable.js";
 
 
 
@@ -153,6 +154,7 @@ function App() {
               <Route path="/staff-history/:staffId" element={<StaffHistory />} /> {/* Route for StaffHistory */}
               <Route path="/book-diagnostic" element={<DiagnosticBookingForm />} />
               <Route path="/coupons" element={<CouponsPage />} />
+              <Route path="/couponshistory" element={<CouponHistoryTable />} />
               <Route path="/create-coupon" element={<CreateCoupon />} />
               <Route path="/upload-docs" element={<UploadDocuments />} />
               <Route path="/docs" element={<DocumentTable />} />
