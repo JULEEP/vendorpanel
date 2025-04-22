@@ -99,37 +99,40 @@ const Dashboard = () => {
         </ResponsiveContainer>
       </div>
 
-      {/* Recent Products Table */}
       <div className="md:col-span-4 p-6 bg-white rounded-lg shadow-md mt-6">
-        <h3 className="text-lg font-semibold mb-4 text-gray-700">Recent Products</h3>
-        <table className="min-w-full table-auto border-collapse">
-          <thead>
-            <tr>
-              <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Product Name</th>
-              <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Category</th>
-              <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Price</th>
-              <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Availability</th>
+      <h3 className="text-lg font-semibold mb-4 text-gray-700">Recent Products</h3>
+      <table className="min-w-full table-auto border-collapse">
+        <thead>
+          <tr>
+            <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Product Name</th>
+            <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Category</th>
+            <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Price</th>
+            <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Availability</th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* Updated products based on your categories */}
+          {[
+            { id: 1, name: "Fresh Lamb Chops", category: "Meat Shop", price: "$50", available: true },
+            { id: 2, name: "Organic Vegetables", category: "Groceries", price: "$25", available: true },
+            { id: 3, name: "Pizza Margherita", category: "Restaurant", price: "$15", available: false },
+            { id: 4, name: "Chicken Drumsticks", category: "Meat Shop", price: "$18", available: true },
+            { id: 5, name: "Frozen Vegetables", category: "Groceries", price: "$12", available: true },
+            { id: 6, name: "Grilled Chicken Pizza", category: "Restaurant", price: "$20", available: true },
+          ].map((product) => (
+            <tr key={product.id}>
+              <td className="px-4 py-2 border-b text-sm">{product.name}</td>
+              <td className="px-4 py-2 border-b text-sm">{product.category}</td>
+              <td className="px-4 py-2 border-b text-sm">{product.price}</td>
+              <td className={`px-4 py-2 border-b text-sm ${product.available ? 'text-green-500' : 'text-red-500'}`}>
+                {product.available ? "Available" : "Out of Stock"}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {/* Example of recent products */}
-            {[
-              { id: 1, name: "Product A", category: "Electronics", price: "$300", available: true },
-              { id: 2, name: "Product B", category: "Furniture", price: "$150", available: true },
-              { id: 3, name: "Product C", category: "Clothing", price: "$50", available: false },
-            ].map((product) => (
-              <tr key={product.id}>
-                <td className="px-4 py-2 border-b text-sm">{product.name}</td>
-                <td className="px-4 py-2 border-b text-sm">{product.category}</td>
-                <td className="px-4 py-2 border-b text-sm">{product.price}</td>
-                <td className={`px-4 py-2 border-b text-sm ${product.available ? 'text-green-500' : 'text-red-500'}`}>
-                  {product.available ? "Available" : "Out of Stock"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    
     </div>
   );
 };
