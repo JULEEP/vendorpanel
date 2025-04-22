@@ -2,24 +2,27 @@ import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 
 const CreateCoupon = () => {
+  // Colors for categories
   const categoryColors = {
     Restaurant: "bg-gradient-to-r from-yellow-400 to-yellow-600",
-    Showroom: "bg-gradient-to-r from-green-400 to-green-600",
-    Electronics: "bg-gradient-to-r from-red-400 to-red-600",
+    "Meat Shop": "bg-gradient-to-r from-red-400 to-red-600",
+    Groceries: "bg-gradient-to-r from-green-400 to-green-600",
   };
 
   const [formData, setFormData] = useState({
     name: "",
     discount: "",
     validTill: "",
-    category: "Restaurant",
+    category: "Restaurant", // Default to Restaurant category
   });
 
+  // Handle form input changes
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handle form submission to add a new coupon
   const handleAddCoupon = (e) => {
     e.preventDefault();
 
@@ -28,17 +31,18 @@ const CreateCoupon = () => {
       name: formData.name,
       discount: parseInt(formData.discount),
       validTill: formData.validTill,
-      color: categoryColors[formData.category],
+      category: formData.category,
+      color: categoryColors[formData.category], // Assign category color
     };
 
     console.log("Coupon Created:", newCoupon);
 
-    // Reset form
+    // Reset form after submission
     setFormData({
       name: "",
       discount: "",
       validTill: "",
-      category: "Restaurant",
+      category: "Restaurant", // Reset to default category
     });
   };
 
@@ -55,6 +59,7 @@ const CreateCoupon = () => {
           <FaPlus /> Add Coupon
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+          {/* Coupon Name Input */}
           <div className="flex flex-col">
             <label className="mb-1 text-gray-600 font-medium">Coupon Name</label>
             <input
@@ -67,6 +72,8 @@ const CreateCoupon = () => {
               className="px-3 py-2 border border-gray-300 rounded"
             />
           </div>
+
+          {/* Discount Input */}
           <div className="flex flex-col">
             <label className="mb-1 text-gray-600 font-medium">Discount (%)</label>
             <input
@@ -79,6 +86,8 @@ const CreateCoupon = () => {
               className="px-3 py-2 border border-gray-300 rounded"
             />
           </div>
+
+          {/* Valid Till Input */}
           <div className="flex flex-col">
             <label className="mb-1 text-gray-600 font-medium">Valid Till</label>
             <input
@@ -90,6 +99,8 @@ const CreateCoupon = () => {
               className="px-3 py-2 border border-gray-300 rounded"
             />
           </div>
+
+          {/* Category Dropdown */}
           <div className="flex flex-col">
             <label className="mb-1 text-gray-600 font-medium">Category</label>
             <select
@@ -99,15 +110,17 @@ const CreateCoupon = () => {
               className="px-3 py-2 border border-gray-300 rounded"
             >
               <option value="Restaurant">Restaurant</option>
-              <option value="Showroom">Showroom</option>
-              <option value="Electronics">Electronics</option>
+              <option value="Meat Shop">Meat Shop</option>
+              <option value="Groceries">Groceries</option>
             </select>
           </div>
         </div>
+
+        {/* Submit Button */}
         <div className="text-right mt-6">
           <button
             type="submit"
-            className="bg-purple-900 hover:bg-purple-900 text-white px-6 py-2 rounded text-sm"
+            className="bg-purple-900 hover:bg-purple-700 text-white px-6 py-2 rounded text-sm"
           >
             Create Coupon
           </button>

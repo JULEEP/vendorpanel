@@ -60,7 +60,7 @@ const Navbar = ({ setIsCollapsed, isCollapsed }) => {
               src="https://static.vecteezy.com/system/resources/previews/026/575/406/large_2x/a-set-of-colorful-shopping-bags-with-handles-paper-shopping-bags-close-up-shopping-days-concept-by-ai-generated-free-photo.jpg"
               alt="Vendor Logo"
             />
-            <h1 className="text-xs">Vendor</h1>
+            <h1 className="text-xs">Redeemly</h1>
           </div>
         </div>
       </div>

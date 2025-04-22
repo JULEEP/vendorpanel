@@ -2,39 +2,43 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cart
 import { useState } from "react";
 
 const Dashboard = () => {
-  const [timeframe, setTimeframe] = useState("Yearly");
+  const [timeframe, setTimeframe] = useState("Today");
 
-  const vendorStats = [
-    { id: 1, name: "Amy Aphrodite", department: "Production", date: "18-02-2025", img: "https://hrm.bdtask-demoserver.com/assets/user-1.png" },
-    { id: 2, name: "Maisha Lucy", department: "Sales", date: "17-02-2025", img: "https://hrm.bdtask-demoserver.com/assets/user-1.png" },
-  ];
+  const vendorSalesData = {
+    Today: [{ name: "Today", sales: 1200 }],
+    "This Week": [
+      { name: "Mon", sales: 300 },
+      { name: "Tue", sales: 250 },
+      { name: "Wed", sales: 450 },
+      { name: "Thu", sales: 500 },
+      { name: "Fri", sales: 400 },
+      { name: "Sat", sales: 700 },
+      { name: "Sun", sales: 600 },
+    ],
+    "Last Week": [
+      { name: "Mon", sales: 250 },
+      { name: "Tue", sales: 300 },
+      { name: "Wed", sales: 350 },
+      { name: "Thu", sales: 400 },
+      { name: "Fri", sales: 450 },
+      { name: "Sat", sales: 500 },
+      { name: "Sun", sales: 550 },
+    ],
+    "Last Month": [
+      { name: "Week 1", sales: 1200 },
+      { name: "Week 2", sales: 1500 },
+      { name: "Week 3", sales: 1800 },
+      { name: "Week 4", sales: 2000 },
+    ],
+  };
 
-  const bookingData = [
-    { name: "Jan", orders: 120, returns: 5 },
-    { name: "Feb", orders: 150, returns: 7 },
-    { name: "Mar", orders: 200, returns: 8 },
-    { name: "Apr", orders: 175, returns: 4 },
-    { name: "May", orders: 190, returns: 10 },
-  ];
+  const handleTimeframeChange = (event) => {
+    setTimeframe(event.target.value);
+  };
 
-  const vendorSalesData = [
-    { name: "Jan", sales: 5000 },
-    { name: "Feb", sales: 7000 },
-    { name: "Mar", sales: 6500 },
-    { name: "Apr", sales: 8000 },
-    { name: "May", sales: 8500 },
-  ];
-
-  const recentProducts = [
-    { id: 1, name: "Product A", category: "Electronics", price: "$300", available: true },
-    { id: 2, name: "Product B", category: "Furniture", price: "$150", available: true },
-    { id: 3, name: "Product C", category: "Clothing", price: "$50", available: false },
-  ];
-
-  const recentOrders = [
-    { orderId: 101, productName: "Product A", quantity: 2, date: "2025-04-10", status: "Completed" },
-    { orderId: 102, productName: "Product B", quantity: 1, date: "2025-04-12", status: "Pending" },
-    { orderId: 103, productName: "Product C", quantity: 5, date: "2025-04-14", status: "Shipped" },
+  // Define a list of colors for the bars
+  const barColors = [
+    "#FF9800", "#4CAF50", "#2196F3", "#9C27B0", "#FF5722", "#FFC107", "#03A9F4",
   ];
 
   return (
@@ -46,24 +50,9 @@ const Dashboard = () => {
           <h4 className="text-lg font-semibold">Total Orders</h4>
         </div>
 
-        <div className="bg-gradient-to-r from-green-400 to-green-600 shadow-lg rounded-lg p-4 text-center text-white">
-          <div className="text-3xl font-bold">30</div>
-          <h4 className="text-lg font-semibold">Products in Stock</h4>
-        </div>
-
-        <div className="bg-gradient-to-r from-red-400 to-red-600 shadow-lg rounded-lg p-4 text-center text-white">
-          <div className="text-3xl font-bold">5</div>
-          <h4 className="text-lg font-semibold">New Returns</h4>
-        </div>
-
         <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 shadow-lg rounded-lg p-4 text-center text-white">
           <div className="text-3xl font-bold">10</div>
-          <h4 className="text-lg font-semibold">Pending Deliveries</h4>
-        </div>
-
-        <div className="bg-gradient-to-r from-purple-400 to-purple-600 shadow-lg rounded-lg p-4 text-center text-white">
-          <div className="text-3xl font-bold">2</div>
-          <h4 className="text-lg font-semibold">Pending Orders</h4>
+          <h4 className="text-lg font-semibold">Pending Coupons</h4>
         </div>
 
         <div className="bg-gradient-to-r from-indigo-400 to-indigo-600 shadow-lg rounded-lg p-4 text-center text-white">
@@ -72,42 +61,42 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Vendor Sales and Booking Graphs */}
-      <div className="md:col-span-4 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-        {/* Sales Chart */}
-        <div className="bg-white p-4 rounded shadow-md">
-          <h3 className="text-lg font-semibold mb-2 text-gray-700">
-            Vendor Sales (Last 5 Months)
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={vendorSalesData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="sales" fill="#FF9800" name="Sales" />
-            </BarChart>
-          </ResponsiveContainer>
+      {/* Sales Chart */}
+      <div className="md:col-span-4 p-4 bg-white rounded shadow-md">
+        <h3 className="text-lg font-semibold mb-2 text-gray-700">Sales Overview</h3>
+        
+        {/* Dropdown to select timeframe */}
+        <div className="mb-4">
+          <select
+            className="border rounded p-2"
+            value={timeframe}
+            onChange={handleTimeframeChange}
+          >
+            <option value="Today">Today</option>
+            <option value="This Week">This Week</option>
+            <option value="Last Week">Last Week</option>
+            <option value="Last Month">Last Month</option>
+          </select>
         </div>
 
-        {/* Orders and Returns Chart */}
-        <div className="bg-white p-4 rounded shadow-md">
-          <h3 className="text-lg font-semibold mb-2 text-gray-700">
-            Orders and Returns (Last 5 Months)
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={bookingData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="orders" fill="#4CAF50" name="Orders" />
-              <Bar dataKey="returns" fill="#F44336" name="Returns" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        {/* BarChart based on selected timeframe */}
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={vendorSalesData[timeframe]}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            {vendorSalesData[timeframe].map((data, index) => (
+              <Bar
+                key={index}
+                dataKey="sales"
+                fill={barColors[index % barColors.length]}  // Cycle through colors if more bars
+                name={data.name}
+              />
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
       </div>
 
       {/* Recent Products Table */}
@@ -123,42 +112,18 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {recentProducts.map((product) => (
+            {/* Example of recent products */}
+            {[
+              { id: 1, name: "Product A", category: "Electronics", price: "$300", available: true },
+              { id: 2, name: "Product B", category: "Furniture", price: "$150", available: true },
+              { id: 3, name: "Product C", category: "Clothing", price: "$50", available: false },
+            ].map((product) => (
               <tr key={product.id}>
                 <td className="px-4 py-2 border-b text-sm">{product.name}</td>
                 <td className="px-4 py-2 border-b text-sm">{product.category}</td>
                 <td className="px-4 py-2 border-b text-sm">{product.price}</td>
                 <td className={`px-4 py-2 border-b text-sm ${product.available ? 'text-green-500' : 'text-red-500'}`}>
                   {product.available ? "Available" : "Out of Stock"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Recent Orders Table */}
-      <div className="md:col-span-4 p-6 bg-white rounded-lg shadow-md mt-6">
-        <h3 className="text-lg font-semibold mb-4 text-gray-700">Recent Orders</h3>
-        <table className="min-w-full table-auto border-collapse">
-          <thead>
-            <tr>
-              <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Order ID</th>
-              <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Product Name</th>
-              <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Quantity</th>
-              <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Date</th>
-              <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentOrders.map((order) => (
-              <tr key={order.orderId}>
-                <td className="px-4 py-2 border-b text-sm">{order.orderId}</td>
-                <td className="px-4 py-2 border-b text-sm">{order.productName}</td>
-                <td className="px-4 py-2 border-b text-sm">{order.quantity}</td>
-                <td className="px-4 py-2 border-b text-sm">{order.date}</td>
-                <td className={`px-4 py-2 border-b text-sm ${order.status === "Completed" ? 'text-green-500' : order.status === "Pending" ? 'text-yellow-500' : 'text-red-500'}`}>
-                  {order.status}
                 </td>
               </tr>
             ))}

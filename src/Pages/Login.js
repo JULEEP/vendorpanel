@@ -57,12 +57,21 @@ const LoginPage = () => {
     }
   };
 
+  const handleDashboardClick = () => {
+    navigate('/dashboard');
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 py-10">
       <div className="flex flex-col md:flex-row items-center bg-white rounded-lg shadow-2xl overflow-hidden max-w-4xl w-full">
         {/* Form Section */}
         <div className="w-full md:w-1/2 p-8 space-y-6">
-          <h2 className="text-3xl font-bold text-center text-gray-800">Vendor Login</h2>
+          {/* Redeemly Text */}
+          <h1 className="text-4xl font-bold text-blue-600 text-center mb-4">Redeemly</h1>
+          
+          {/* Vendor Login Heading */}
+          <h2 className="text-xl font-bold text-center text-gray-800">Vendor Login</h2>
+
           {error && (
             <div className="p-3 text-red-600 bg-red-100 rounded-md shadow-sm">
               {error}
@@ -113,6 +122,14 @@ const LoginPage = () => {
               {isLoading ? 'Logging in...' : 'Login'}
             </button>
           </form>
+
+          {/* Dashboard Button */}
+          <button
+            onClick={handleDashboardClick}
+            className="w-full p-3 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition duration-200 transform hover:scale-105"
+          >
+            Go to Dashboard
+          </button>
         </div>
 
         {/* Image Section */}
