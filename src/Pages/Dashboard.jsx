@@ -57,7 +57,7 @@ const Dashboard = () => {
 
         <div className="bg-gradient-to-r from-indigo-400 to-indigo-600 shadow-lg rounded-lg p-4 text-center text-white">
           <div className="text-3xl font-bold">5</div>
-          <h4 className="text-lg font-semibold">Completed Orders</h4>
+          <h4 className="text-lg font-semibold">Redeemed Today</h4>
         </div>
       </div>
 
