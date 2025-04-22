@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { FaHamburger, FaShoppingBag, FaTv, FaFilter } from "react-icons/fa"; // Icons for categories
 
+// Function to generate a random 5-character alphanumeric coupon code
+const generateCouponCode = () => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 5; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
+
 const CouponsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -9,25 +19,25 @@ const CouponsPage = () => {
     {
       category: "Restaurant",
       coupons: [
-        { id: 1, name: "Summer Feast", discount: 20, validTill: "31-07-2025", code: "SUMMER20", color: "bg-gradient-to-r from-yellow-400 to-yellow-600" },
-        { id: 2, name: "Family Dinner", discount: 15, validTill: "31-12-2025", code: "FAMILY15", color: "bg-gradient-to-r from-orange-400 to-orange-600" },
-        { id: 3, name: "Pizza Night", discount: 10, validTill: "15-06-2025", code: "PIZZA10", color: "bg-gradient-to-r from-red-400 to-red-600" },
+        { id: 1, name: "Summer Feast", discount: 20, validTill: "31-07-2025", code: generateCouponCode(), color: "bg-gradient-to-r from-yellow-400 to-yellow-600" },
+        { id: 2, name: "Family Dinner", discount: 15, validTill: "31-12-2025", code: generateCouponCode(), color: "bg-gradient-to-r from-orange-400 to-orange-600" },
+        { id: 3, name: "Pizza Night", discount: 10, validTill: "15-06-2025", code: generateCouponCode(), color: "bg-gradient-to-r from-red-400 to-red-600" },
       ]
     },
     // Coupons for Meat Shop
     {
       category: "Meat Shop",
       coupons: [
-        { id: 4, name: "Meat Lovers Special", discount: 25, validTill: "31-08-2025", code: "MEAT25", color: "bg-gradient-to-r from-red-400 to-red-600" },
-        { id: 5, name: "Butcher's Deal", discount: 30, validTill: "30-11-2025", code: "BUTCHER30", color: "bg-gradient-to-r from-green-400 to-green-600" },
+        { id: 4, name: "Meat Lovers Special", discount: 25, validTill: "31-08-2025", code: generateCouponCode(), color: "bg-gradient-to-r from-red-400 to-red-600" },
+        { id: 5, name: "Butcher's Deal", discount: 30, validTill: "30-11-2025", code: generateCouponCode(), color: "bg-gradient-to-r from-green-400 to-green-600" },
       ]
     },
     // Coupons for Groceries
     {
       category: "Groceries",
       coupons: [
-        { id: 6, name: "Grocery Discount", discount: 20, validTill: "31-07-2025", code: "GROCERY20", color: "bg-gradient-to-r from-yellow-400 to-yellow-600" },
-        { id: 7, name: "Healthy Groceries", discount: 15, validTill: "30-09-2025", code: "HEALTHY15", color: "bg-gradient-to-r from-blue-400 to-blue-600" },
+        { id: 6, name: "Grocery Discount", discount: 20, validTill: "31-07-2025", code: generateCouponCode(), color: "bg-gradient-to-r from-yellow-400 to-yellow-600" },
+        { id: 7, name: "Healthy Groceries", discount: 15, validTill: "30-09-2025", code: generateCouponCode(), color: "bg-gradient-to-r from-blue-400 to-blue-600" },
       ]
     },
   ]);
